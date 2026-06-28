@@ -564,8 +564,11 @@ async function loadRecipe(json){
 document.getElementById('loadRecipe').onclick=()=>loadRecipe(document.getElementById('recipe').value);
 document.getElementById('loadExport').onclick=async()=>{const ok=await loadRecipe(document.getElementById('recipe').value);
   if(ok)setTimeout(()=>document.getElementById('exportAll').click(),250);};
-// expose for Chrome automation: window.PostStudio.loadRecipe({...}) / .exportAll()
-window.PostStudio={loadRecipe,exportAll:()=>document.getElementById('exportAll').click()};
+// expose for Chrome automation: window.PostStudio.loadRecipe({...}) / .exportAll() / .renderAll()
+window.PostStudio={loadRecipe,exportAll:()=>document.getElementById('exportAll').click(),
+  renderAll:async()=>{const keep=state.cur,ks=state.sel;state.sel=null;const out=[];
+    for(let i=0;i<state.slides.length;i++){state.cur=i;draw();out.push(cv.toDataURL('image/png'));}
+    state.cur=keep;state.sel=ks;refresh();return out;}};
 
 // boot
 (async()=>{try{await document.fonts.ready;await Promise.all([
