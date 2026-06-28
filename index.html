@@ -204,6 +204,16 @@
         <label style="margin:0;display:flex;align-items:center;gap:6px;color:var(--text)"><input type="checkbox" id="showhandle" checked> Handle</label>
       </div>
     </div>
+
+    <div class="group">
+      <h2>Recipe (automation)</h2>
+      <textarea id="recipe" rows="4" placeholder='Dán recipe JSON vào đây (xem README để biết format)...'></textarea>
+      <div class="row" style="margin-top:8px">
+        <button class="btn" id="loadRecipe">Load</button>
+        <button class="btn primary" id="loadExport">Load + Export all</button>
+      </div>
+      <p class="hint">Ảnh nên nhúng base64 (data:) để export không lỗi CORS. Dùng cho luồng Studio tự động (mình + Chrome nạp recipe).</p>
+    </div>
   </aside>
 
   <main class="stage">
@@ -513,6 +523,49 @@ document.getElementById('exportAll').onclick=async()=>{const keep=state.cur,ksel
       a.download=`slide-${String(i+1).padStart(2,'0')}.png`;a.click();
       setTimeout(()=>{URL.revokeObjectURL(a.href);res();},350);},'image/png');});}
   state.cur=keep;state.sel=ksel;refresh();};
+
+// ---------- recipe mode (automation) ----------
+function loadImgSrc(src){return new Promise(res=>{const im=new Image();
+  if(/^https?:/i.test(src))im.crossOrigin='anonymous';
+  im.onload=()=>res({im,src});im.onerror=()=>res(null);im.src=src;});}
+async function loadRecipe(json){
+  let r;try{r=typeof json==='string'?JSON.parse(json):json;}catch(e){alert('Recipe JSON lỗi: '+e.message);return false;}
+  if(!r||!Array.isArray(r.slides)){alert('Recipe thiếu mảng "slides".');return false;}
+  if(r.handle!=null)state.handle=r.handle;
+  if(r.font&&FW[r.font])state.font=r.font;
+  if(r.scrim)state.scrim=r.scrim;
+  if(r.scrimStr!=null)state.scrimStr=r.scrimStr;
+  const out=[];
+  for(const sd of r.slides){
+    const s=newSlide();
+    s.bgMode=sd.bg&&sd.bg.mode?sd.bg.mode:(sd.bg&&sd.bg.color?'solid':'photo');
+    if(s.bgMode==='solid')s.bgColor=(sd.bg&&sd.bg.color)||'#1D4ED8';
+    if(sd.kicker)s.kicker=sd.kicker;
+    s.headline=sd.headline||'';
+    s.body=sd.body||'';
+    if(sd.textStyle)s.textStyle=sd.textStyle;
+    if(sd.color)s.color=sd.color;
+    if(sd.valign)s.valign=sd.valign;
+    if(sd.hsize)s.hsize=sd.hsize;
+    if(s.bgMode==='photo'&&sd.bg&&sd.bg.image){const b=await loadImgSrc(sd.bg.image);
+      if(b){s.img=b.im;s.imgSrc=b.src;}if(sd.bg.zoom)s.zoom=sd.bg.zoom;
+      if(sd.bg.offsetX)s.offsetX=sd.bg.offsetX;if(sd.bg.offsetY)s.offsetY=sd.bg.offsetY;}
+    if(Array.isArray(sd.elements))for(const e of sd.elements){
+      if(e.type==='image'&&e.image){const g=await loadImgSrc(e.image);if(g)
+        s.elements.push({id:uid++,type:'image',img:g.im,src:g.src,x:e.x!=null?e.x:W/2,y:e.y!=null?e.y:H*0.62,scale:e.scale||1,rot:e.rot||0,shadow:e.shadow!==false});}
+      else if(e.type==='text')
+        s.elements.push({id:uid++,type:'text',text:e.text||'',x:e.x!=null?e.x:W/2,y:e.y!=null?e.y:H*0.55,scale:e.scale||1,rot:e.rot||0,shadow:!!e.shadow,box:e.box||'#FFFFFF',color:e.color||'#0E1116'});
+    }
+    out.push(s);
+  }
+  state.slides=out.length?out:[newSlide()];state.cur=0;state.sel=null;refresh();
+  return true;
+}
+document.getElementById('loadRecipe').onclick=()=>loadRecipe(document.getElementById('recipe').value);
+document.getElementById('loadExport').onclick=async()=>{const ok=await loadRecipe(document.getElementById('recipe').value);
+  if(ok)setTimeout(()=>document.getElementById('exportAll').click(),250);};
+// expose for Chrome automation: window.PostStudio.loadRecipe({...}) / .exportAll()
+window.PostStudio={loadRecipe,exportAll:()=>document.getElementById('exportAll').click()};
 
 // boot
 (async()=>{try{await document.fonts.ready;await Promise.all([
