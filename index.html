@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carousel Studio — IG post maker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Oswald:wght@600;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<!-- HEIC -> JPEG converter (loads from web on first use; falls back gracefully offline) -->
+<script src="https://unpkg.com/heic2any@0.0.4/dist/heic2any.min.js"></script>
+<style>
+  :root{
+    --bg:#0E1116; --panel:#171B22; --panel2:#1F242D; --line:#2A303B;
+    --text:#E8EAED; --muted:#9AA3AF; --accent:#C4922A; --accent2:#3B82F6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  .app{display:grid;grid-template-columns:390px 1fr;min-height:100vh}
+  @media(max-width:880px){.app{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border-right:1px solid var(--line);
+         padding:18px 18px 60px;overflow-y:auto;max-height:100vh}
+  @media(max-width:880px){.panel{max-height:none;border-right:0;border-bottom:1px solid var(--line)}}
+  h1{font-size:15px;margin:0 0 2px}
+  .sub{font-size:11.5px;color:var(--muted);margin:0 0 16px;line-height:1.4}
+  .group{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+  .group h2{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin:0 0 10px;font-weight:700}
+  label{display:block;font-size:11.5px;color:var(--muted);margin:10px 0 4px}
+  input[type=text],textarea,select{width:100%;background:#0F1318;color:var(--text);
+    border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px}
+  textarea{resize:vertical;min-height:54px;line-height:1.35}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  .row{display:flex;gap:8px}.row>*{flex:1}
+  .btn{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;
+       padding:9px 10px;font:inherit;font-size:12.5px;cursor:pointer;display:inline-flex;
+       align-items:center;justify-content:center;gap:6px}
+  .btn:hover{border-color:#3a4250}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#0E1116;font-weight:700}
+  .btn.ghost{background:transparent}
+  .swatches{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .sw{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);cursor:pointer}
+  .sw.active{border-color:#fff;box-shadow:0 0 0 2px var(--bg),0 0 0 4px #fff}
+  .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{flex:1;background:transparent;border:0;color:var(--muted);padding:8px 4px;font:inherit;font-size:12px;cursor:pointer}
+  .seg button.active{background:var(--accent2);color:#fff}
+  .hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.4}
+  .slidebar{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+  .pageno{font-size:12px;color:var(--muted);min-width:64px;text-align:center}
+  .stage{display:flex;flex-direction:column;align-items:center;padding:24px;gap:14px}
+  .canvas-wrap{position:relative;width:min(420px,86vw)}
+  canvas{width:100%;height:auto;display:block;border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.5);cursor:grab;background:#000}
+  canvas:active{cursor:grabbing}
+  .stage .tip{font-size:12px;color:var(--muted);text-align:center;max-width:420px;line-height:1.5}
+  .export-row{display:flex;gap:10px;width:min(420px,86vw)}
+  .export-row .btn{flex:1}
+  kbd{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:11px}
+  #elctrl{display:none}
+  .chip{font-size:10.5px;color:var(--accent);background:rgba(196,146,42,.12);
+        border:1px solid rgba(196,146,42,.3);border-radius:6px;padding:4px 8px;margin-top:8px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel">
+    <h1>Carousel Studio</h1>
+    <p class="sub">IG posts 1080×1350 · ảnh nền + chữ to + sticker icon + hộp text. Hỗ trợ HEIC (iPhone).</p>
+
+    <div class="group">
+      <h2>Slides</h2>
+      <div class="slidebar">
+        <button class="btn" id="prev">‹</button>
+        <span class="pageno" id="pageno">1 / 1</span>
+        <button class="btn" id="next">›</button>
+      </div>
+      <div class="row">
+        <button class="btn" id="add">+ Add</button>
+        <button class="btn" id="dup">⧉ Dup</button>
+        <button class="btn ghost" id="del">🗑</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Background (this slide)</h2>
+      <div class="seg" id="bgmode">
+        <button data-m="photo" class="active">Photo</button>
+        <button data-m="solid">Solid color</button>
+      </div>
+      <div id="photoctrl">
+        <button class="btn primary" id="upload" style="width:100%;margin-top:10px">⬆ Import photo (JPG/PNG/HEIC)</button>
+        <input type="file" id="file" accept="image/*,.heic,.heif" hidden>
+        <label>Zoom</label>
+        <input type="range" id="zoom" min="1" max="3" step="0.01" value="1">
+        <p class="hint">Kéo trên ảnh để canh. (Khi đang chọn 1 element thì kéo sẽ di chuyển element đó.)</p>
+      </div>
+      <div id="solidctrl" style="display:none">
+        <label>Màu nền</label>
+        <div class="swatches">
+          <div class="sw active" data-bg="#1D4ED8" style="background:#1D4ED8"></div>
+          <div class="sw" data-bg="#0E1116" style="background:#0E1116"></div>
+          <div class="sw" data-bg="#111827" style="background:#111827"></div>
+          <div class="sw" data-bg="#C4922A" style="background:#C4922A"></div>
+          <input type="color" id="bgcolor" value="#1D4ED8" style="width:34px;height:30px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer">
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Headline (this slide)</h2>
+      <label>Label nhỏ (kicker)</label>
+      <input type="text" id="kicker" placeholder="vd POV, Part I (để trống = ẩn)">
+      <label>Headline (Enter để xuống dòng)</label>
+      <textarea id="headline" rows="3"></textarea>
+      <label>Body / câu phụ (tuỳ chọn)</label>
+      <textarea id="body" rows="2" placeholder="(để trống nếu chỉ cần headline)"></textarea>
+      <label>Kiểu chữ</label>
+      <div class="seg" id="tstyle">
+        <button data-t="fill" class="active">Fill</button>
+        <button data-t="outline">Outline</button>
+        <button data-t="shadow">Shadow</button>
+      </div>
+      <label>Headline size <span id="hsval" style="color:var(--muted)"></span></label>
+      <input type="range" id="hsize" min="50" max="180" step="1" value="120">
+      <label>Vị trí</label>
+      <div class="seg" id="valign">
+        <button data-v="top" class="active">Top</button>
+        <button data-v="middle">Middle</button>
+        <button data-v="bottom">Bottom</button>
+      </div>
+      <label>Màu chữ</label>
+      <div class="swatches" id="swatches">
+        <div class="sw active" data-c="#FFFFFF" style="background:#FFFFFF"></div>
+        <div class="sw" data-c="#F4E9C1" style="background:#F4E9C1"></div>
+        <div class="sw" data-c="#C4922A" style="background:#C4922A"></div>
+        <div class="sw" data-c="#0E1116" style="background:#0E1116"></div>
+        <input type="color" id="customcolor" value="#ffffff" style="width:34px;height:30px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer">
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Elements (sticker · hộp text · mũi tên)</h2>
+      <div class="row">
+        <button class="btn" id="addImg">+ Image</button>
+        <button class="btn" id="addText">+ Text box</button>
+        <button class="btn" id="addArrow">+ Arrow →</button>
+      </div>
+      <input type="file" id="elfile" accept="image/*,.heic,.heif" hidden>
+      <p class="hint">Bấm vào element trên canvas để chọn · kéo để di chuyển.</p>
+      <div id="elctrl">
+        <div class="chip" id="eltype">image</div>
+        <div id="eltextfields">
+          <label>Nội dung</label>
+          <textarea id="eltext" rows="2"></textarea>
+          <label>Màu hộp</label>
+          <div class="seg" id="elbox">
+            <button data-b="none">None</button>
+            <button data-b="#FFFFFF" class="active">White</button>
+            <button data-b="#171B22">Dark</button>
+          </div>
+          <label>Màu chữ element</label>
+          <div class="seg" id="elcolor">
+            <button data-c="#0E1116" class="active">Dark</button>
+            <button data-c="#FFFFFF">White</button>
+          </div>
+        </div>
+        <label>Scale <span id="elscaleval" style="color:var(--muted)"></span></label>
+        <input type="range" id="elscale" min="0.2" max="3" step="0.01" value="1">
+        <label>Xoay <span id="elrotval" style="color:var(--muted)"></span></label>
+        <input type="range" id="elrot" min="-45" max="45" step="1" value="0">
+        <label><input type="checkbox" id="elshadow" checked style="vertical-align:middle"> Đổ bóng</label>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="elback">⬇ Back</button>
+          <button class="btn" id="elfront">⬆ Front</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="eldup">⧉ Dup</button>
+          <button class="btn ghost" id="eldel">🗑 Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Global</h2>
+      <label>Font headline</label>
+      <select id="font">
+        <option value="Anton">Anton — đậm, hẹp</option>
+        <option value="Archivo Black">Archivo Black — đậm, rộng</option>
+        <option value="Inter">Inter Black — sạch, hiện đại</option>
+        <option value="Oswald">Oswald — đậm vừa, hẹp</option>
+      </select>
+      <label>Scrim (lớp tối nền)</label>
+      <div class="seg" id="scrim">
+        <button data-s="none">None</button>
+        <button data-s="top" class="active">Top</button>
+        <button data-s="bottom">Bottom</button>
+        <button data-s="full">Full</button>
+      </div>
+      <label>Độ đậm scrim <span id="scval" style="color:var(--muted)"></span></label>
+      <input type="range" id="scstr" min="0" max="0.85" step="0.01" value="0.45">
+      <label>Handle (góc dưới)</label>
+      <input type="text" id="handle" value="@yourhandle">
+      <div class="row" style="margin-top:10px">
+        <label style="margin:0;display:flex;align-items:center;gap:6px;color:var(--text)"><input type="checkbox" id="showpill" checked> Pill</label>
+        <label style="margin:0;display:flex;align-items:center;gap:6px;color:var(--text)"><input type="checkbox" id="showhandle" checked> Handle</label>
+      </div>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <div class="canvas-wrap"><canvas id="cv" width="1080" height="1350"></canvas></div>
+    <p class="tip">Kéo ảnh để canh · bấm element để chọn rồi kéo · <kbd>←</kbd> <kbd>→</kbd> đổi slide · <kbd>Del</kbd> xoá element</p>
+    <div class="export-row">
+      <button class="btn" id="exportOne">⬇ Export slide này</button>
+      <button class="btn primary" id="exportAll">⬇ Export tất cả (PNG)</button>
+    </div>
+  </main>
+</div>
+
+<script>
+const W=1080,H=1350,M=72;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let uid=1;
+
+function newSlide(over={}){
+  return Object.assign({
+    bgMode:'photo', bgColor:'#1D4ED8',
+    img:null, imgSrc:null, zoom:1, offsetX:0, offsetY:0,
+    kicker:'', headline:'Your big bold\nheadline here', body:'',
+    hsize:120, valign:'top', color:'#FFFFFF', textStyle:'fill',
+    elements:[]
+  }, over);
+}
+const state={
+  slides:[ newSlide({headline:'AI can code\nfaster than us', body:'Are we cooked?'}) ],
+  cur:0, sel:null,
+  font:'Anton', scrim:'top', scrimStr:0.45, handle:'@yourhandle', showPill:true, showHandle:true
+};
+const S=()=>state.slides[state.cur];
+const FW={'Anton':'400','Archivo Black':'400','Inter':'900','Oswald':'700'};
+const headFont=px=>`${FW[state.font]} ${px}px "${state.font}"`;
+const isLight=hex=>{const c=hex.replace('#','');const r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return (0.299*r+0.587*g+0.114*b)>150;};
+
+// ---------- image loading (with HEIC) ----------
+function blobToImg(blob){return new Promise((res,rej)=>{const u=URL.createObjectURL(blob);const im=new Image();im.onload=()=>res({im,src:u});im.onerror=rej;im.src=u;});}
+async function readImage(file){
+  let blob=file;
+  const heic=/heic|heif/i.test(file.type)||/\.hei[cf]$/i.test(file.name);
+  if(heic){
+    if(window.heic2any){
+      try{ blob=await heic2any({blob:file,toType:'image/jpeg',quality:0.92});
+           if(Array.isArray(blob)) blob=blob[0]; }
+      catch(e){ alert('Không chuyển được HEIC này. Thử lại hoặc đổi ảnh sang JPG/PNG.'); return null; }
+    }else{ alert('HEIC cần mạng để chuyển đổi lần đầu (hoặc đổi ảnh sang JPG/PNG).'); return null; }
+  }
+  return await blobToImg(blob);
+}
+
+// ---------- drawing ----------
+function coverDraw(img,zoom,ox,oy){
+  const base=Math.max(W/img.width,H/img.height),sc=base*zoom;
+  const dw=img.width*sc,dh=img.height*sc,mx=(dw-W)/2,my=(dh-H)/2;
+  ox=Math.max(-mx,Math.min(mx,ox)); oy=Math.max(-my,Math.min(my,oy));
+  ctx.drawImage(img,(W-dw)/2+ox,(H-dh)/2+oy,dw,dh);
+  return [ox,oy];
+}
+function scrim(){
+  const k=state.scrimStr; if(state.scrim==='none'||k===0)return;
+  if(state.scrim==='full'){ctx.fillStyle=`rgba(0,0,0,${k})`;ctx.fillRect(0,0,W,H);return;}
+  const g=state.scrim==='top'?ctx.createLinearGradient(0,0,0,H*0.62):ctx.createLinearGradient(0,H,0,H*0.38);
+  g.addColorStop(0,`rgba(0,0,0,${k})`);g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+}
+function wrap(text,maxW){
+  const out=[];text.split('\n').forEach(p=>{
+    if(p===''){out.push('');return;}
+    let line='';p.split(' ').forEach(w=>{const t=line?line+' '+w:w;
+      if(ctx.measureText(t).width>maxW&&line){out.push(line);line=w;}else line=t;});
+    out.push(line);});
+  return out;
+}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+function drawStyledLine(l,x,y,px,color,style){
+  if(style==='outline'){
+    ctx.lineJoin='round';ctx.strokeStyle=isLight(color)?'#0E1116':'#FFFFFF';
+    ctx.lineWidth=px*0.09;ctx.strokeText(l,x,y);ctx.fillStyle=color;ctx.fillText(l,x,y);
+  }else if(style==='shadow'){
+    ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=px*0.12;ctx.shadowOffsetY=3;
+    ctx.fillStyle=color;ctx.fillText(l,x,y);
+    ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  }else{
+    ctx.shadowColor='rgba(0,0,0,0.35)';ctx.shadowBlur=px*0.04;ctx.shadowOffsetY=1;
+    ctx.fillStyle=color;ctx.fillText(l,x,y);
+    ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  }
+}
+
+function drawElement(e){
+  ctx.save();
+  ctx.translate(e.x,e.y);
+  ctx.rotate(e.rot*Math.PI/180);
+  if(e.shadow){ctx.shadowColor='rgba(0,0,0,0.45)';ctx.shadowBlur=40;ctx.shadowOffsetY=14;}
+  if(e.type==='image'&&e.img){
+    const maxSide=380*e.scale, r=Math.max(e.img.width,e.img.height);
+    const w=e.img.width/r*maxSide, h=e.img.height/r*maxSide;
+    e._w=w;e._h=h;
+    const rad=Math.min(w,h)*0.12;
+    rr(-w/2,-h/2,w,h,rad);ctx.save();ctx.clip();ctx.drawImage(e.img,-w/2,-h/2,w,h);ctx.restore();
+    ctx.shadowColor='transparent';
+  }else{ // text / arrow
+    const fs=46*e.scale, pad=24*e.scale, maxW=560*e.scale;
+    ctx.font=`700 ${fs}px Inter`;
+    const lines=wrap(e.text||'',maxW-pad*2);
+    const lh=fs*1.3;
+    let tw=0;lines.forEach(l=>tw=Math.max(tw,ctx.measureText(l).width));
+    const w=Math.min(maxW,tw+pad*2), h=lines.length*lh+pad*2;
+    e._w=w;e._h=h;
+    if(e.box&&e.box!=='none'){ctx.fillStyle=e.box;rr(-w/2,-h/2,w,h,18*e.scale);ctx.fill();}
+    ctx.shadowColor='transparent';
+    ctx.fillStyle=e.color;ctx.textAlign='left';ctx.textBaseline='top';
+    let yy=-h/2+pad;lines.forEach(l=>{ctx.fillText(l,-w/2+pad,yy);yy+=lh;});
+  }
+  // selection box
+  if(state.sel===e){
+    ctx.strokeStyle='#3B82F6';ctx.lineWidth=3;ctx.setLineDash([10,8]);
+    ctx.strokeRect(-e._w/2-6,-e._h/2-6,e._w+12,e._h+12);ctx.setLineDash([]);
+  }
+  ctx.restore();
+}
+
+function draw(){
+  const s=S();
+  ctx.clearRect(0,0,W,H);
+  if(s.bgMode==='solid'){ctx.fillStyle=s.bgColor;ctx.fillRect(0,0,W,H);}
+  else{ctx.fillStyle='#0E1116';ctx.fillRect(0,0,W,H);
+    if(s.img){const[o,p]=coverDraw(s.img,s.zoom,s.offsetX,s.offsetY);s.offsetX=o;s.offsetY=p;}
+    scrim();}
+
+  // base text
+  const maxW=W-M*2,hpx=s.hsize,lh=hpx*0.96;
+  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.font=headFont(hpx);const hlines=wrap(s.headline,maxW);
+  const kickerH=s.kicker?60:0,bodyPx=40,bodyLH=bodyPx*1.34;
+  let blines=[];if(s.body){ctx.font=`400 ${bodyPx}px Inter`;blines=wrap(s.body,maxW);}
+  const blockH=kickerH+hlines.length*lh+(blines.length?28+blines.length*bodyLH:0);
+  let y=s.valign==='top'?150:s.valign==='middle'?(H-blockH)/2:H-170-blockH;
+
+  if(s.kicker){ctx.font='700 30px Inter';ctx.fillStyle=s.color;ctx.globalAlpha=.92;
+    ctx.fillText(s.kicker.toUpperCase(),M,y);ctx.globalAlpha=1;y+=kickerH;}
+  ctx.font=headFont(hpx);
+  hlines.forEach(l=>{drawStyledLine(l,M,y,hpx,s.color,s.textStyle);y+=lh;});
+  if(blines.length){y+=28;ctx.font=`400 ${bodyPx}px Inter`;
+    blines.forEach(l=>{drawStyledLine(l,M,y,bodyPx,s.color,s.textStyle==='outline'?'outline':'shadow');y+=bodyLH;});}
+
+  // elements
+  s.elements.forEach(drawElement);
+
+  // pill
+  if(state.showPill){const txt=`${state.cur+1}/${state.slides.length}`;ctx.font='600 30px Inter';
+    const pw=ctx.measureText(txt).width+40,ph=52,px=W-M-pw,py=44;
+    ctx.fillStyle='rgba(0,0,0,0.55)';rr(px,py,pw,ph,ph/2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.textAlign='center';
+    ctx.fillText(txt,px+pw/2,py+ph/2+1);ctx.textAlign='left';}
+  // handle
+  if(state.showHandle&&state.handle){ctx.font='600 30px Inter';ctx.fillStyle='rgba(255,255,255,0.9)';
+    ctx.textBaseline='alphabetic';ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=8;
+    ctx.fillText(state.handle,M,H-58);ctx.shadowColor='transparent';ctx.shadowBlur=0;}
+}
+
+// ---------- hit test / interaction ----------
+function hitEl(px,py){
+  const els=S().elements;
+  for(let i=els.length-1;i>=0;i--){const e=els[i];if(!e._w)continue;
+    const dx=px-e.x,dy=py-e.y,a=-e.rot*Math.PI/180;
+    const lx=dx*Math.cos(a)-dy*Math.sin(a),ly=dx*Math.sin(a)+dy*Math.cos(a);
+    if(Math.abs(lx)<=e._w/2&&Math.abs(ly)<=e._h/2)return e;}
+  return null;
+}
+let drag=null,lcx=0,lcy=0;
+function toCanvas(e){const r=cv.getBoundingClientRect();return{k:W/r.width,
+  x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)};}
+cv.addEventListener('pointerdown',e=>{
+  const p=toCanvas(e),hit=hitEl(p.x,p.y);
+  cv.setPointerCapture(e.pointerId);lcx=e.clientX;lcy=e.clientY;
+  if(hit){state.sel=hit;drag='el';refreshEl();draw();}
+  else{state.sel=null;drag='pan';refreshEl();draw();}
+});
+cv.addEventListener('pointermove',e=>{
+  if(!drag)return;const r=cv.getBoundingClientRect(),k=W/r.width;
+  const dx=(e.clientX-lcx)*k,dy=(e.clientY-lcy)*k;lcx=e.clientX;lcy=e.clientY;
+  if(drag==='el'&&state.sel){state.sel.x+=dx;state.sel.y+=dy;draw();}
+  else if(drag==='pan'&&S().img&&S().bgMode==='photo'){S().offsetX+=dx;S().offsetY+=dy;draw();}
+});
+cv.addEventListener('pointerup',()=>drag=null);
+cv.addEventListener('pointercancel',()=>drag=null);
+
+// ---------- elements ----------
+function addImageEl(im,src){S().elements.push({id:uid++,type:'image',img:im,src,x:W/2,y:H*0.62,scale:1,rot:-6,shadow:true});}
+function addTextEl(){S().elements.push({id:uid++,type:'text',text:'1. Your point here',x:W/2,y:H*0.55,scale:1,rot:0,shadow:false,box:'#FFFFFF',color:'#0E1116'});}
+function addArrowEl(){S().elements.push({id:uid++,type:'text',text:'→',x:W/2,y:H*0.8,scale:2,rot:0,shadow:true,box:'none',color:'#FFFFFF'});}
+
+document.getElementById('addImg').onclick=()=>document.getElementById('elfile').click();
+document.getElementById('elfile').onchange=async e=>{const f=e.target.files[0];if(!f)return;
+  const r=await readImage(f);if(r){addImageEl(r.im,r.src);state.sel=S().elements[S().elements.length-1];refreshEl();draw();}
+  e.target.value='';};
+document.getElementById('addText').onclick=()=>{addTextEl();state.sel=S().elements[S().elements.length-1];refreshEl();draw();};
+document.getElementById('addArrow').onclick=()=>{addArrowEl();state.sel=S().elements[S().elements.length-1];refreshEl();draw();};
+
+function refreshEl(){
+  const box=document.getElementById('elctrl'),e=state.sel;
+  if(!e){box.style.display='none';return;}
+  box.style.display='block';
+  document.getElementById('eltype').textContent=e.type==='image'?'image':'text';
+  document.getElementById('eltextfields').style.display=e.type==='image'?'none':'block';
+  if(e.type!=='image'){
+    document.getElementById('eltext').value=e.text;
+    document.querySelectorAll('#elbox button').forEach(b=>b.classList.toggle('active',b.dataset.b===e.box));
+    document.querySelectorAll('#elcolor button').forEach(b=>b.classList.toggle('active',b.dataset.c===e.color));
+  }
+  document.getElementById('elscale').value=e.scale;
+  document.getElementById('elscaleval').textContent=e.scale.toFixed(2)+'×';
+  document.getElementById('elrot').value=e.rot;
+  document.getElementById('elrotval').textContent=e.rot+'°';
+  document.getElementById('elshadow').checked=e.shadow;
+}
+const onEl=(id,ev,fn)=>document.getElementById(id).addEventListener(ev,e=>{if(!state.sel)return;fn(e,state.sel);draw();});
+onEl('eltext','input',(e,s)=>s.text=e.target.value);
+onEl('elscale','input',(e,s)=>{s.scale=+e.target.value;document.getElementById('elscaleval').textContent=s.scale.toFixed(2)+'×';});
+onEl('elrot','input',(e,s)=>{s.rot=+e.target.value;document.getElementById('elrotval').textContent=s.rot+'°';});
+onEl('elshadow','change',(e,s)=>s.shadow=e.target.checked);
+document.querySelectorAll('#elbox button').forEach(b=>b.onclick=()=>{if(!state.sel)return;state.sel.box=b.dataset.b;
+  document.querySelectorAll('#elbox button').forEach(x=>x.classList.toggle('active',x===b));draw();});
+document.querySelectorAll('#elcolor button').forEach(b=>b.onclick=()=>{if(!state.sel)return;state.sel.color=b.dataset.c;
+  document.querySelectorAll('#elcolor button').forEach(x=>x.classList.toggle('active',x===b));draw();});
+document.getElementById('eldel').onclick=()=>{if(!state.sel)return;const a=S().elements;a.splice(a.indexOf(state.sel),1);state.sel=null;refreshEl();draw();};
+document.getElementById('eldup').onclick=()=>{if(!state.sel)return;const c=Object.assign({},state.sel,{id:uid++,x:state.sel.x+40,y:state.sel.y+40});S().elements.push(c);state.sel=c;refreshEl();draw();};
+document.getElementById('elfront').onclick=()=>{if(!state.sel)return;const a=S().elements,i=a.indexOf(state.sel);a.splice(i,1);a.push(state.sel);draw();};
+document.getElementById('elback').onclick=()=>{if(!state.sel)return;const a=S().elements,i=a.indexOf(state.sel);a.splice(i,1);a.unshift(state.sel);draw();};
+
+// ---------- UI sync ----------
+function refresh(){
+  const s=S();
+  document.getElementById('pageno').textContent=`${state.cur+1} / ${state.slides.length}`;
+  document.querySelectorAll('#bgmode button').forEach(b=>b.classList.toggle('active',b.dataset.m===s.bgMode));
+  document.getElementById('photoctrl').style.display=s.bgMode==='photo'?'block':'none';
+  document.getElementById('solidctrl').style.display=s.bgMode==='solid'?'block':'none';
+  document.getElementById('zoom').value=s.zoom;
+  document.getElementById('kicker').value=s.kicker;
+  document.getElementById('headline').value=s.headline;
+  document.getElementById('body').value=s.body;
+  document.getElementById('hsize').value=s.hsize;
+  document.getElementById('hsval').textContent=s.hsize+'px';
+  document.getElementById('scval').textContent=Math.round(state.scrimStr*100)+'%';
+  document.querySelectorAll('#tstyle button').forEach(b=>b.classList.toggle('active',b.dataset.t===s.textStyle));
+  document.querySelectorAll('#valign button').forEach(b=>b.classList.toggle('active',b.dataset.v===s.valign));
+  document.querySelectorAll('#swatches .sw').forEach(b=>b.classList.toggle('active',b.dataset.c===s.color));
+  refreshEl();draw();
+}
+const bind=(id,ev,fn)=>document.getElementById(id).addEventListener(ev,fn);
+bind('kicker','input',e=>{S().kicker=e.target.value;draw();});
+bind('headline','input',e=>{S().headline=e.target.value;draw();});
+bind('body','input',e=>{S().body=e.target.value;draw();});
+bind('hsize','input',e=>{S().hsize=+e.target.value;document.getElementById('hsval').textContent=e.target.value+'px';draw();});
+bind('zoom','input',e=>{S().zoom=+e.target.value;draw();});
+bind('handle','input',e=>{state.handle=e.target.value;draw();});
+bind('scstr','input',e=>{state.scrimStr=+e.target.value;document.getElementById('scval').textContent=Math.round(state.scrimStr*100)+'%';draw();});
+bind('font','change',e=>{state.font=e.target.value;draw();});
+bind('bgcolor','input',e=>{S().bgColor=e.target.value;document.querySelectorAll('#solidctrl .sw').forEach(x=>x.classList.remove('active'));draw();});
+bind('showpill','change',e=>{state.showPill=e.target.checked;draw();});
+bind('showhandle','change',e=>{state.showHandle=e.target.checked;draw();});
+document.querySelectorAll('#bgmode button').forEach(b=>b.onclick=()=>{S().bgMode=b.dataset.m;refresh();});
+document.querySelectorAll('#tstyle button').forEach(b=>b.onclick=()=>{S().textStyle=b.dataset.t;refresh();});
+document.querySelectorAll('#valign button').forEach(b=>b.onclick=()=>{S().valign=b.dataset.v;refresh();});
+document.querySelectorAll('#scrim button').forEach(b=>b.onclick=()=>{state.scrim=b.dataset.s;
+  document.querySelectorAll('#scrim button').forEach(x=>x.classList.toggle('active',x===b));draw();});
+document.querySelectorAll('#swatches .sw').forEach(b=>b.onclick=()=>{S().color=b.dataset.c;refresh();});
+document.getElementById('customcolor').oninput=e=>{S().color=e.target.value;
+  document.querySelectorAll('#swatches .sw').forEach(x=>x.classList.remove('active'));draw();};
+document.querySelectorAll('#solidctrl .sw').forEach(b=>b.onclick=()=>{S().bgColor=b.dataset.bg;
+  document.querySelectorAll('#solidctrl .sw').forEach(x=>x.classList.toggle('active',x===b));draw();});
+
+// slides
+document.getElementById('prev').onclick=()=>{if(state.cur>0){state.cur--;state.sel=null;refresh();}};
+document.getElementById('next').onclick=()=>{if(state.cur<state.slides.length-1){state.cur++;state.sel=null;refresh();}};
+document.getElementById('add').onclick=()=>{state.slides.splice(state.cur+1,0,newSlide());state.cur++;state.sel=null;refresh();};
+document.getElementById('dup').onclick=()=>{const s=S();
+  const c=Object.assign({},s,{elements:s.elements.map(el=>Object.assign({},el,{id:uid++}))});
+  state.slides.splice(state.cur+1,0,c);state.cur++;state.sel=null;refresh();};
+document.getElementById('del').onclick=()=>{if(state.slides.length===1)return;
+  state.slides.splice(state.cur,1);state.cur=Math.max(0,state.cur-1);state.sel=null;refresh();};
+window.addEventListener('keydown',e=>{
+  if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
+  if(e.key==='ArrowLeft')document.getElementById('prev').click();
+  if(e.key==='ArrowRight')document.getElementById('next').click();
+  if((e.key==='Delete'||e.key==='Backspace')&&state.sel)document.getElementById('eldel').click();
+});
+
+// upload main photo
+document.getElementById('upload').onclick=()=>document.getElementById('file').click();
+document.getElementById('file').onchange=async e=>{const f=e.target.files[0];if(!f)return;
+  const r=await readImage(f);if(r){const s=S();s.img=r.im;s.imgSrc=r.src;s.offsetX=0;s.offsetY=0;s.zoom=1;
+    document.getElementById('zoom').value=1;draw();}e.target.value='';};
+
+// export
+document.getElementById('exportOne').onclick=()=>{const sel=state.sel;state.sel=null;draw();
+  cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);
+    a.download=`slide-${String(state.cur+1).padStart(2,'0')}.png`;a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),800);state.sel=sel;draw();},'image/png');};
+document.getElementById('exportAll').onclick=async()=>{const keep=state.cur,ksel=state.sel;state.sel=null;
+  for(let i=0;i<state.slides.length;i++){state.cur=i;draw();
+    await new Promise(res=>{cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);
+      a.download=`slide-${String(i+1).padStart(2,'0')}.png`;a.click();
+      setTimeout(()=>{URL.revokeObjectURL(a.href);res();},350);},'image/png');});}
+  state.cur=keep;state.sel=ksel;refresh();};
+
+// boot
+(async()=>{try{await document.fonts.ready;await Promise.all([
+  document.fonts.load('400 120px "Anton"'),document.fonts.load('400 120px "Archivo Black"'),
+  document.fonts.load('900 120px "Inter"'),document.fonts.load('700 120px "Oswald"'),
+  document.fonts.load('400 40px "Inter"'),document.fonts.load('700 46px "Inter"')]);}catch(e){}
+  refresh();})();
+</script>
+</body>
+</html>
