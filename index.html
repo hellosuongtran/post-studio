@@ -319,8 +319,8 @@ function drawElement(e){
     rr(-w/2,-h/2,w,h,rad);ctx.save();ctx.clip();ctx.drawImage(e.img,-w/2,-h/2,w,h);ctx.restore();
     ctx.shadowColor='transparent';
   }else{ // text / arrow
-    const fs=46*e.scale, pad=24*e.scale, maxW=560*e.scale;
-    ctx.font=`700 ${fs}px Inter`;
+    const fs=46*e.scale, pad=24*e.scale, maxW=(e.maxw||560)*e.scale;
+    ctx.font=`${e.italic?'italic 400':'700'} ${fs}px Inter`;
     const lines=wrap(e.text||'',maxW-pad*2);
     const lh=fs*1.3;
     let tw=0;lines.forEach(l=>tw=Math.max(tw,ctx.measureText(l).width));
@@ -554,7 +554,7 @@ async function loadRecipe(json){
       if(e.type==='image'&&e.image){const g=await loadImgSrc(e.image);if(g)
         s.elements.push({id:uid++,type:'image',img:g.im,src:g.src,x:e.x!=null?e.x:W/2,y:e.y!=null?e.y:H*0.62,scale:e.scale||1,rot:e.rot||0,shadow:e.shadow!==false});}
       else if(e.type==='text')
-        s.elements.push({id:uid++,type:'text',text:e.text||'',x:e.x!=null?e.x:W/2,y:e.y!=null?e.y:H*0.55,scale:e.scale||1,rot:e.rot||0,shadow:!!e.shadow,box:e.box||'#FFFFFF',color:e.color||'#0E1116'});
+        s.elements.push({id:uid++,type:'text',text:e.text||'',x:e.x!=null?e.x:W/2,y:e.y!=null?e.y:H*0.55,scale:e.scale||1,rot:e.rot||0,shadow:!!e.shadow,box:e.box||'#FFFFFF',color:e.color||'#0E1116',italic:!!e.italic,maxw:e.maxw});
     }
     out.push(s);
   }

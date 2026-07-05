@@ -39,7 +39,8 @@ You can also drive it from the page console / Chrome automation:
       "hsize": 120,
       "elements": [
         { "type": "image", "image": "data:image/png;base64,...", "x": 540, "y": 900, "scale": 0.6, "rot": -6, "shadow": true },
-        { "type": "text", "text": "1. Context Engineering", "x": 540, "y": 700, "scale": 1, "rot": 0, "box": "#FFFFFF", "color": "#0E1116" }
+        { "type": "text", "text": "1. Context Engineering", "x": 540, "y": 700, "scale": 1, "rot": 0, "box": "#FFFFFF", "color": "#0E1116" },
+        { "type": "text", "text": "Nguồn: Microsoft WTI 2026", "x": 350, "y": 1140, "scale": 0.62, "box": "none", "color": "#9AA3AE", "italic": true, "maxw": 1200 }
       ]
     },
     {
@@ -58,5 +59,6 @@ Field notes:
 - `textStyle`: `fill` | `outline` | `shadow`
 - `valign`: `top` | `middle` | `bottom`
 - `bg.mode`: `photo` (needs `image`) | `solid` (needs `color`)
+- text elements: `italic: true` renders italic 400 weight (dùng cho dòng nguồn / chú thích), `maxw` overrides max width before wrap (default 560, tính theo px canvas trước khi nhân `scale`)
 - text element `box`: a hex color for a bubble, or `"none"` for plain text (e.g. an arrow `→`)
 - canvas is 1080×1350, so `x`/`y` are in that coordinate space
