@@ -9,6 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Oswald:wght@600;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 <!-- HEIC -> JPEG converter (loads from web on first use; falls back gracefully offline) -->
 <script src="https://unpkg.com/heic2any@0.0.4/dist/heic2any.min.js"></script>
+<!-- ZIP for one-click export all -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
   :root{
     --bg:#0E1116; --panel:#171B22; --panel2:#1F242D; --line:#2A303B;
@@ -45,6 +47,9 @@
   .seg button{flex:1;background:transparent;border:0;color:var(--muted);padding:8px 4px;font:inherit;font-size:12px;cursor:pointer}
   .seg button.active{background:var(--accent2);color:#fff}
   .hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.4}
+  .warn{font-size:11.5px;color:#F0662E;margin-top:8px;line-height:1.4;display:none}
+  .warn.show{display:block}
+  .savenote{font-size:10.5px;color:var(--muted);margin-top:6px}
   .slidebar{display:flex;align-items:center;gap:6px;margin-bottom:10px}
   .pageno{font-size:12px;color:var(--muted);min-width:64px;text-align:center}
   .stage{display:flex;flex-direction:column;align-items:center;padding:24px;gap:14px}
@@ -64,7 +69,7 @@
 <div class="app">
   <aside class="panel">
     <h1>Carousel Studio</h1>
-    <p class="sub">IG posts 1080×1350 · ảnh nền + chữ to + sticker icon + hộp text. Hỗ trợ HEIC (iPhone).</p>
+    <p class="sub">IG 4:5 · TikTok 9:16 · vuông 1:1 · ảnh nền + chữ to + sticker. Tự lưu, hỗ trợ HEIC.</p>
 
     <div class="group">
       <h2>Slides</h2>
@@ -98,7 +103,7 @@
         <div class="swatches">
           <div class="sw active" data-bg="#1D4ED8" style="background:#1D4ED8"></div>
           <div class="sw" data-bg="#0E1116" style="background:#0E1116"></div>
-          <div class="sw" data-bg="#111827" style="background:#111827"></div>
+          <div class="sw" data-bg="#101418" style="background:#101418"></div>
           <div class="sw" data-bg="#C4922A" style="background:#C4922A"></div>
           <input type="color" id="bgcolor" value="#1D4ED8" style="width:34px;height:30px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer">
         </div>
@@ -121,20 +126,30 @@
       </div>
       <label>Headline size <span id="hsval" style="color:var(--muted)"></span></label>
       <input type="range" id="hsize" min="50" max="180" step="1" value="120">
+      <label>Body size <span id="bsval" style="color:var(--muted)"></span></label>
+      <input type="range" id="bsize" min="26" max="64" step="1" value="40">
       <label>Vị trí</label>
       <div class="seg" id="valign">
         <button data-v="top" class="active">Top</button>
         <button data-v="middle">Middle</button>
         <button data-v="bottom">Bottom</button>
       </div>
-      <label>Màu chữ</label>
+      <label>Màu chữ (headline)</label>
       <div class="swatches" id="swatches">
         <div class="sw active" data-c="#FFFFFF" style="background:#FFFFFF"></div>
-        <div class="sw" data-c="#F4E9C1" style="background:#F4E9C1"></div>
-        <div class="sw" data-c="#C4922A" style="background:#C4922A"></div>
+        <div class="sw" data-c="#F5F5F0" style="background:#F5F5F0"></div>
+        <div class="sw" data-c="#FFC933" style="background:#FFC933"></div>
         <div class="sw" data-c="#0E1116" style="background:#0E1116"></div>
         <input type="color" id="customcolor" value="#ffffff" style="width:34px;height:30px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer">
       </div>
+      <label>Màu body (để trống = theo headline)</label>
+      <div class="swatches" id="bswatches">
+        <div class="sw active" data-bc="" style="background:linear-gradient(135deg,#333,#777)" title="Theo headline"></div>
+        <div class="sw" data-bc="#F5F5F0" style="background:#F5F5F0"></div>
+        <div class="sw" data-bc="#9AA3AE" style="background:#9AA3AE"></div>
+        <div class="sw" data-bc="#FFC933" style="background:#FFC933"></div>
+      </div>
+      <p class="warn" id="overflowWarn">⚠ Chữ đang tràn khung. Giảm cỡ chữ hoặc bớt dòng.</p>
     </div>
 
     <div class="group">
@@ -162,6 +177,7 @@
             <button data-c="#0E1116" class="active">Dark</button>
             <button data-c="#FFFFFF">White</button>
           </div>
+          <label><input type="checkbox" id="elitalic" style="vertical-align:middle"> Chữ nghiêng (dùng cho dòng nguồn)</label>
         </div>
         <label>Scale <span id="elscaleval" style="color:var(--muted)"></span></label>
         <input type="range" id="elscale" min="0.2" max="3" step="0.01" value="1">
@@ -181,6 +197,12 @@
 
     <div class="group">
       <h2>Global</h2>
+      <label>Khổ ảnh (aspect ratio)</label>
+      <div class="seg" id="sizesel">
+        <button data-sz="4:5" class="active">IG 4:5</button>
+        <button data-sz="9:16">TikTok 9:16</button>
+        <button data-sz="1:1">Vuông 1:1</button>
+      </div>
       <label>Font headline</label>
       <select id="font">
         <option value="Anton">Anton — đậm, hẹp</option>
@@ -206,13 +228,21 @@
     </div>
 
     <div class="group">
+      <h2>Export</h2>
+      <label>Tên file (prefix)</label>
+      <input type="text" id="prefix" placeholder="vd saint-p01 (để trống = slide)">
+      <p class="hint">File sẽ đặt tên: <code>prefix-slide-01.png</code>. Mỗi post đặt prefix khác nhau để không đè nhau trong Downloads.</p>
+    </div>
+
+    <div class="group">
       <h2>Recipe (automation)</h2>
       <textarea id="recipe" rows="4" placeholder='Dán recipe JSON vào đây (xem README để biết format)...'></textarea>
       <div class="row" style="margin-top:8px">
         <button class="btn" id="loadRecipe">Load</button>
-        <button class="btn primary" id="loadExport">Load + Export all</button>
+        <button class="btn primary" id="loadExport">Load + Export ZIP</button>
       </div>
-      <p class="hint">Ảnh nên nhúng base64 (data:) để export không lỗi CORS. Dùng cho luồng Studio tự động (mình + Chrome nạp recipe).</p>
+      <p class="hint">Ảnh nên nhúng base64 (data:) để export không lỗi CORS. Nội dung tự lưu vào máy, mở lại là còn.</p>
+      <button class="btn ghost" id="resetAll" style="width:100%;margin-top:8px">Xoá hết & làm lại</button>
     </div>
   </aside>
 
@@ -221,28 +251,31 @@
     <p class="tip">Kéo ảnh để canh · bấm element để chọn rồi kéo · <kbd>←</kbd> <kbd>→</kbd> đổi slide · <kbd>Del</kbd> xoá element</p>
     <div class="export-row">
       <button class="btn" id="exportOne">⬇ Export slide này</button>
-      <button class="btn primary" id="exportAll">⬇ Export tất cả (PNG)</button>
+      <button class="btn" id="exportAll">⬇ Export từng PNG</button>
+      <button class="btn primary" id="exportZip">⬇ Export tất cả (ZIP)</button>
     </div>
+    <p class="savenote" id="saveNote">Tự lưu vào máy này.</p>
   </main>
 </div>
 
 <script>
-const W=1080,H=1350,M=72;
+let W=1080,H=1350;const M=72;
+const SIZES={'4:5':[1080,1350],'9:16':[1080,1920],'1:1':[1080,1080]};
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 let uid=1;
 
 function newSlide(over={}){
   return Object.assign({
-    bgMode:'photo', bgColor:'#1D4ED8',
+    bgMode:'photo', bgColor:'#101418',
     img:null, imgSrc:null, zoom:1, offsetX:0, offsetY:0,
     kicker:'', headline:'Your big bold\nheadline here', body:'',
-    hsize:120, valign:'top', color:'#FFFFFF', textStyle:'fill',
+    hsize:120, bodySize:40, valign:'top', color:'#FFFFFF', bodyColor:'', textStyle:'fill',
     elements:[]
   }, over);
 }
 const state={
   slides:[ newSlide({headline:'AI can code\nfaster than us', body:'Are we cooked?'}) ],
-  cur:0, sel:null,
+  cur:0, sel:null, size:'4:5', prefix:'', exporting:false,
   font:'Anton', scrim:'top', scrimStr:0.45, handle:'@yourhandle', showPill:true, showHandle:true
 };
 const S=()=>state.slides[state.cur];
@@ -250,8 +283,11 @@ const FW={'Anton':'400','Archivo Black':'400','Inter':'900','Oswald':'700'};
 const headFont=px=>`${FW[state.font]} ${px}px "${state.font}"`;
 const isLight=hex=>{const c=hex.replace('#','');const r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return (0.299*r+0.587*g+0.114*b)>150;};
 
-// ---------- image loading (with HEIC) ----------
-function blobToImg(blob){return new Promise((res,rej)=>{const u=URL.createObjectURL(blob);const im=new Image();im.onload=()=>res({im,src:u});im.onerror=rej;im.src=u;});}
+function setSize(key){const d=SIZES[key];if(!d)return;state.size=key;W=d[0];H=d[1];cv.width=W;cv.height=H;}
+
+// ---------- image loading (with HEIC) → dataURL so it survives autosave ----------
+function blobToDataURL(blob){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(blob);});}
+function imgFromSrc(src){return new Promise((res,rej)=>{const im=new Image();if(/^https?:/i.test(src))im.crossOrigin='anonymous';im.onload=()=>res(im);im.onerror=rej;im.src=src;});}
 async function readImage(file){
   let blob=file;
   const heic=/heic|heif/i.test(file.type)||/\.hei[cf]$/i.test(file.name);
@@ -262,7 +298,8 @@ async function readImage(file){
       catch(e){ alert('Không chuyển được HEIC này. Thử lại hoặc đổi ảnh sang JPG/PNG.'); return null; }
     }else{ alert('HEIC cần mạng để chuyển đổi lần đầu (hoặc đổi ảnh sang JPG/PNG).'); return null; }
   }
-  return await blobToImg(blob);
+  try{const src=await blobToDataURL(blob);const im=await imgFromSrc(src);return {im,src};}
+  catch(e){alert('Không đọc được ảnh này.');return null;}
 }
 
 // ---------- drawing ----------
@@ -331,8 +368,8 @@ function drawElement(e){
     ctx.fillStyle=e.color;ctx.textAlign='left';ctx.textBaseline='top';
     let yy=-h/2+pad;lines.forEach(l=>{ctx.fillText(l,-w/2+pad,yy);yy+=lh;});
   }
-  // selection box
-  if(state.sel===e){
+  // selection box (không vẽ khi export)
+  if(state.sel===e&&!state.exporting){
     ctx.strokeStyle='#3B82F6';ctx.lineWidth=3;ctx.setLineDash([10,8]);
     ctx.strokeRect(-e._w/2-6,-e._h/2-6,e._w+12,e._h+12);ctx.setLineDash([]);
   }
@@ -351,17 +388,18 @@ function draw(){
   const maxW=W-M*2,hpx=s.hsize,lh=hpx*0.96;
   ctx.textAlign='left';ctx.textBaseline='top';
   ctx.font=headFont(hpx);const hlines=wrap(s.headline,maxW);
-  const kickerH=s.kicker?60:0,bodyPx=40,bodyLH=bodyPx*1.34;
+  const kickerH=s.kicker?60:0,bodyPx=s.bodySize||40,bodyLH=bodyPx*1.34;
   let blines=[];if(s.body){ctx.font=`400 ${bodyPx}px Inter`;blines=wrap(s.body,maxW);}
   const blockH=kickerH+hlines.length*lh+(blines.length?28+blines.length*bodyLH:0);
   let y=s.valign==='top'?150:s.valign==='middle'?(H-blockH)/2:H-170-blockH;
+  const yTop=y, yBot=y+blockH;
 
   if(s.kicker){ctx.font='700 30px Inter';ctx.fillStyle=s.color;ctx.globalAlpha=.92;
     ctx.fillText(s.kicker.toUpperCase(),M,y);ctx.globalAlpha=1;y+=kickerH;}
   ctx.font=headFont(hpx);
   hlines.forEach(l=>{drawStyledLine(l,M,y,hpx,s.color,s.textStyle);y+=lh;});
-  if(blines.length){y+=28;ctx.font=`400 ${bodyPx}px Inter`;
-    blines.forEach(l=>{drawStyledLine(l,M,y,bodyPx,s.color,s.textStyle==='outline'?'outline':'shadow');y+=bodyLH;});}
+  if(blines.length){y+=28;ctx.font=`400 ${bodyPx}px Inter`;const bcol=s.bodyColor||s.color;
+    blines.forEach(l=>{drawStyledLine(l,M,y,bodyPx,bcol,s.textStyle==='outline'?'outline':'shadow');y+=bodyLH;});}
 
   // elements
   s.elements.forEach(drawElement);
@@ -376,6 +414,18 @@ function draw(){
   if(state.showHandle&&state.handle){ctx.font='600 30px Inter';ctx.fillStyle='rgba(255,255,255,0.9)';
     ctx.textBaseline='alphabetic';ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=8;
     ctx.fillText(state.handle,M,H-58);ctx.shadowColor='transparent';ctx.shadowBlur=0;}
+
+  // safe-zone guide + overflow (chỉ trên màn hình, không vào PNG)
+  const over = yTop<40 || yBot>H-120;
+  if(!state.exporting){
+    ctx.save();
+    ctx.strokeStyle='rgba(255,255,255,0.10)';ctx.lineWidth=2;ctx.setLineDash([12,10]);
+    ctx.strokeRect(M,120,W-M*2,H-240);ctx.setLineDash([]);
+    if(over){ctx.strokeStyle='#F0662E';ctx.lineWidth=4;ctx.strokeRect(6,6,W-12,H-12);}
+    ctx.restore();
+    const wEl=document.getElementById('overflowWarn');if(wEl)wEl.classList.toggle('show',over);
+  }
+  scheduleSave();
 }
 
 // ---------- hit test / interaction ----------
@@ -407,8 +457,8 @@ cv.addEventListener('pointercancel',()=>drag=null);
 
 // ---------- elements ----------
 function addImageEl(im,src){S().elements.push({id:uid++,type:'image',img:im,src,x:W/2,y:H*0.62,scale:1,rot:-6,shadow:true});}
-function addTextEl(){S().elements.push({id:uid++,type:'text',text:'1. Your point here',x:W/2,y:H*0.55,scale:1,rot:0,shadow:false,box:'#FFFFFF',color:'#0E1116'});}
-function addArrowEl(){S().elements.push({id:uid++,type:'text',text:'→',x:W/2,y:H*0.8,scale:2,rot:0,shadow:true,box:'none',color:'#FFFFFF'});}
+function addTextEl(){S().elements.push({id:uid++,type:'text',text:'1. Your point here',x:W/2,y:H*0.55,scale:1,rot:0,shadow:false,box:'#FFFFFF',color:'#0E1116',italic:false});}
+function addArrowEl(){S().elements.push({id:uid++,type:'text',text:'→',x:W/2,y:H*0.8,scale:2,rot:0,shadow:true,box:'none',color:'#FFFFFF',italic:false});}
 
 document.getElementById('addImg').onclick=()=>document.getElementById('elfile').click();
 document.getElementById('elfile').onchange=async e=>{const f=e.target.files[0];if(!f)return;
@@ -427,6 +477,7 @@ function refreshEl(){
     document.getElementById('eltext').value=e.text;
     document.querySelectorAll('#elbox button').forEach(b=>b.classList.toggle('active',b.dataset.b===e.box));
     document.querySelectorAll('#elcolor button').forEach(b=>b.classList.toggle('active',b.dataset.c===e.color));
+    document.getElementById('elitalic').checked=!!e.italic;
   }
   document.getElementById('elscale').value=e.scale;
   document.getElementById('elscaleval').textContent=e.scale.toFixed(2)+'×';
@@ -439,6 +490,7 @@ onEl('eltext','input',(e,s)=>s.text=e.target.value);
 onEl('elscale','input',(e,s)=>{s.scale=+e.target.value;document.getElementById('elscaleval').textContent=s.scale.toFixed(2)+'×';});
 onEl('elrot','input',(e,s)=>{s.rot=+e.target.value;document.getElementById('elrotval').textContent=s.rot+'°';});
 onEl('elshadow','change',(e,s)=>s.shadow=e.target.checked);
+onEl('elitalic','change',(e,s)=>s.italic=e.target.checked);
 document.querySelectorAll('#elbox button').forEach(b=>b.onclick=()=>{if(!state.sel)return;state.sel.box=b.dataset.b;
   document.querySelectorAll('#elbox button').forEach(x=>x.classList.toggle('active',x===b));draw();});
 document.querySelectorAll('#elcolor button').forEach(b=>b.onclick=()=>{if(!state.sel)return;state.sel.color=b.dataset.c;
@@ -461,10 +513,19 @@ function refresh(){
   document.getElementById('body').value=s.body;
   document.getElementById('hsize').value=s.hsize;
   document.getElementById('hsval').textContent=s.hsize+'px';
+  document.getElementById('bsize').value=s.bodySize||40;
+  document.getElementById('bsval').textContent=(s.bodySize||40)+'px';
   document.getElementById('scval').textContent=Math.round(state.scrimStr*100)+'%';
+  document.getElementById('font').value=state.font;
+  document.getElementById('handle').value=state.handle;
+  document.getElementById('prefix').value=state.prefix||'';
+  document.getElementById('scstr').value=state.scrimStr;
   document.querySelectorAll('#tstyle button').forEach(b=>b.classList.toggle('active',b.dataset.t===s.textStyle));
   document.querySelectorAll('#valign button').forEach(b=>b.classList.toggle('active',b.dataset.v===s.valign));
+  document.querySelectorAll('#sizesel button').forEach(b=>b.classList.toggle('active',b.dataset.sz===state.size));
+  document.querySelectorAll('#scrim button').forEach(b=>b.classList.toggle('active',b.dataset.s===state.scrim));
   document.querySelectorAll('#swatches .sw').forEach(b=>b.classList.toggle('active',b.dataset.c===s.color));
+  document.querySelectorAll('#bswatches .sw').forEach(b=>b.classList.toggle('active',(b.dataset.bc||'')===(s.bodyColor||'')));
   refreshEl();draw();
 }
 const bind=(id,ev,fn)=>document.getElementById(id).addEventListener(ev,fn);
@@ -472,8 +533,10 @@ bind('kicker','input',e=>{S().kicker=e.target.value;draw();});
 bind('headline','input',e=>{S().headline=e.target.value;draw();});
 bind('body','input',e=>{S().body=e.target.value;draw();});
 bind('hsize','input',e=>{S().hsize=+e.target.value;document.getElementById('hsval').textContent=e.target.value+'px';draw();});
+bind('bsize','input',e=>{S().bodySize=+e.target.value;document.getElementById('bsval').textContent=e.target.value+'px';draw();});
 bind('zoom','input',e=>{S().zoom=+e.target.value;draw();});
 bind('handle','input',e=>{state.handle=e.target.value;draw();});
+bind('prefix','input',e=>{state.prefix=e.target.value.trim();scheduleSave();});
 bind('scstr','input',e=>{state.scrimStr=+e.target.value;document.getElementById('scval').textContent=Math.round(state.scrimStr*100)+'%';draw();});
 bind('font','change',e=>{state.font=e.target.value;draw();});
 bind('bgcolor','input',e=>{S().bgColor=e.target.value;document.querySelectorAll('#solidctrl .sw').forEach(x=>x.classList.remove('active'));draw();});
@@ -482,11 +545,13 @@ bind('showhandle','change',e=>{state.showHandle=e.target.checked;draw();});
 document.querySelectorAll('#bgmode button').forEach(b=>b.onclick=()=>{S().bgMode=b.dataset.m;refresh();});
 document.querySelectorAll('#tstyle button').forEach(b=>b.onclick=()=>{S().textStyle=b.dataset.t;refresh();});
 document.querySelectorAll('#valign button').forEach(b=>b.onclick=()=>{S().valign=b.dataset.v;refresh();});
+document.querySelectorAll('#sizesel button').forEach(b=>b.onclick=()=>{setSize(b.dataset.sz);refresh();});
 document.querySelectorAll('#scrim button').forEach(b=>b.onclick=()=>{state.scrim=b.dataset.s;
   document.querySelectorAll('#scrim button').forEach(x=>x.classList.toggle('active',x===b));draw();});
 document.querySelectorAll('#swatches .sw').forEach(b=>b.onclick=()=>{S().color=b.dataset.c;refresh();});
 document.getElementById('customcolor').oninput=e=>{S().color=e.target.value;
   document.querySelectorAll('#swatches .sw').forEach(x=>x.classList.remove('active'));draw();};
+document.querySelectorAll('#bswatches .sw').forEach(b=>b.onclick=()=>{S().bodyColor=b.dataset.bc||'';refresh();});
 document.querySelectorAll('#solidctrl .sw').forEach(b=>b.onclick=()=>{S().bgColor=b.dataset.bg;
   document.querySelectorAll('#solidctrl .sw').forEach(x=>x.classList.toggle('active',x===b));draw();});
 
@@ -512,17 +577,91 @@ document.getElementById('file').onchange=async e=>{const f=e.target.files[0];if(
   const r=await readImage(f);if(r){const s=S();s.img=r.im;s.imgSrc=r.src;s.offsetX=0;s.offsetY=0;s.zoom=1;
     document.getElementById('zoom').value=1;draw();}e.target.value='';};
 
-// export
-document.getElementById('exportOne').onclick=()=>{const sel=state.sel;state.sel=null;draw();
+// ---------- export ----------
+function fnamePrefix(){return state.prefix?state.prefix+'-':'';}
+document.getElementById('exportOne').onclick=()=>{const sel=state.sel;state.sel=null;state.exporting=true;draw();
   cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);
-    a.download=`slide-${String(state.cur+1).padStart(2,'0')}.png`;a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),800);state.sel=sel;draw();},'image/png');};
-document.getElementById('exportAll').onclick=async()=>{const keep=state.cur,ksel=state.sel;state.sel=null;
+    a.download=`${fnamePrefix()}slide-${String(state.cur+1).padStart(2,'0')}.png`;a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),800);state.exporting=false;state.sel=sel;draw();},'image/png');};
+document.getElementById('exportAll').onclick=async()=>{const keep=state.cur,ksel=state.sel;state.sel=null;state.exporting=true;
   for(let i=0;i<state.slides.length;i++){state.cur=i;draw();
     await new Promise(res=>{cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);
-      a.download=`slide-${String(i+1).padStart(2,'0')}.png`;a.click();
+      a.download=`${fnamePrefix()}slide-${String(i+1).padStart(2,'0')}.png`;a.click();
       setTimeout(()=>{URL.revokeObjectURL(a.href);res();},350);},'image/png');});}
-  state.cur=keep;state.sel=ksel;refresh();};
+  state.exporting=false;state.cur=keep;state.sel=ksel;refresh();};
+async function exportZip(){
+  if(!window.JSZip){alert('Thư viện ZIP cần mạng để tải lần đầu. Dùng "Export từng PNG" thay thế.');return;}
+  const keep=state.cur,ksel=state.sel;state.sel=null;state.exporting=true;
+  const zip=new JSZip(),pre=state.prefix||'carousel';
+  for(let i=0;i<state.slides.length;i++){state.cur=i;draw();
+    const b=await new Promise(res=>cv.toBlob(res,'image/png'));
+    zip.file(`${fnamePrefix()}slide-${String(i+1).padStart(2,'0')}.png`,b);}
+  state.exporting=false;state.cur=keep;state.sel=ksel;refresh();
+  const blob=await zip.generateAsync({type:'blob'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${pre}.zip`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+document.getElementById('exportZip').onclick=exportZip;
+
+// ---------- autosave (localStorage) ----------
+const LSKEY='carousel_studio_v2';
+let saveTimer=null;
+function serialize(){
+  return {v:2,W,H,size:state.size,prefix:state.prefix,font:state.font,scrim:state.scrim,
+    scrimStr:state.scrimStr,handle:state.handle,showPill:state.showPill,showHandle:state.showHandle,cur:state.cur,
+    slides:state.slides.map(s=>({
+      bgMode:s.bgMode,bgColor:s.bgColor,
+      imgSrc:(s.imgSrc&&s.imgSrc.startsWith('data:'))?s.imgSrc:null,
+      zoom:s.zoom,offsetX:s.offsetX,offsetY:s.offsetY,
+      kicker:s.kicker,headline:s.headline,body:s.body,hsize:s.hsize,bodySize:s.bodySize,
+      valign:s.valign,color:s.color,bodyColor:s.bodyColor,textStyle:s.textStyle,
+      elements:s.elements.map(e=>({type:e.type,text:e.text,
+        src:(e.src&&e.src.startsWith('data:'))?e.src:null,
+        x:e.x,y:e.y,scale:e.scale,rot:e.rot,shadow:e.shadow,box:e.box,color:e.color,italic:e.italic,maxw:e.maxw}))
+    }))};
+}
+function doSave(){
+  try{localStorage.setItem(LSKEY,JSON.stringify(serialize()));
+    const n=document.getElementById('saveNote');if(n)n.textContent='Đã lưu tự động vào máy này.';}
+  catch(err){
+    try{const s=serialize();s.slides.forEach(sl=>{sl.imgSrc=null;sl.elements.forEach(e=>e.src=null);});
+      localStorage.setItem(LSKEY,JSON.stringify(s));
+      const n=document.getElementById('saveNote');if(n)n.textContent='Đã lưu (ảnh quá nặng nên không lưu ảnh, chỉ lưu chữ).';}
+    catch(e2){/* bỏ qua */}
+  }
+}
+function scheduleSave(){if(state.exporting)return;clearTimeout(saveTimer);saveTimer=setTimeout(doSave,600);}
+async function restoreState(){
+  let raw;try{raw=localStorage.getItem(LSKEY);}catch(e){return false;}
+  if(!raw)return false;
+  let d;try{d=JSON.parse(raw);}catch(e){return false;}
+  if(!d||!Array.isArray(d.slides)||!d.slides.length)return false;
+  state.size=d.size||'4:5';setSize(state.size);
+  state.prefix=d.prefix||'';
+  if(d.font&&FW[d.font])state.font=d.font;
+  if(d.scrim)state.scrim=d.scrim;
+  if(d.scrimStr!=null)state.scrimStr=d.scrimStr;
+  if(d.handle!=null)state.handle=d.handle;
+  if(d.showPill!=null)state.showPill=d.showPill;
+  if(d.showHandle!=null)state.showHandle=d.showHandle;
+  const out=[];
+  for(const sd of d.slides){
+    const s=newSlide(Object.assign({},sd,{img:null,imgSrc:null,elements:[]}));
+    if(sd.imgSrc){try{s.img=await imgFromSrc(sd.imgSrc);s.imgSrc=sd.imgSrc;}catch(e){}}
+    if(Array.isArray(sd.elements))for(const e of sd.elements){
+      if(e.type==='image'&&e.src){try{const im=await imgFromSrc(e.src);s.elements.push({id:uid++,type:'image',img:im,src:e.src,x:e.x,y:e.y,scale:e.scale||1,rot:e.rot||0,shadow:e.shadow!==false});}catch(err){}}
+      else if(e.type==='text')s.elements.push({id:uid++,type:'text',text:e.text||'',x:e.x,y:e.y,scale:e.scale||1,rot:e.rot||0,shadow:!!e.shadow,box:e.box||'#FFFFFF',color:e.color||'#0E1116',italic:!!e.italic,maxw:e.maxw});
+    }
+    out.push(s);
+  }
+  state.slides=out;state.cur=Math.min(d.cur||0,out.length-1);state.sel=null;
+  return true;
+}
+document.getElementById('resetAll').onclick=()=>{
+  if(!confirm('Xoá hết nội dung đang có và làm lại từ đầu?'))return;
+  try{localStorage.removeItem(LSKEY);}catch(e){}
+  state.slides=[newSlide()];state.cur=0;state.sel=null;state.prefix='';setSize('4:5');refresh();
+};
 
 // ---------- recipe mode (automation) ----------
 function loadImgSrc(src){return new Promise(res=>{const im=new Image();
@@ -531,6 +670,8 @@ function loadImgSrc(src){return new Promise(res=>{const im=new Image();
 async function loadRecipe(json){
   let r;try{r=typeof json==='string'?JSON.parse(json):json;}catch(e){alert('Recipe JSON lỗi: '+e.message);return false;}
   if(!r||!Array.isArray(r.slides)){alert('Recipe thiếu mảng "slides".');return false;}
+  if(r.size&&SIZES[r.size])setSize(r.size); else setSize(state.size);
+  if(r.prefix!=null)state.prefix=r.prefix;
   if(r.handle!=null)state.handle=r.handle;
   if(r.font&&FW[r.font])state.font=r.font;
   if(r.scrim)state.scrim=r.scrim;
@@ -539,14 +680,16 @@ async function loadRecipe(json){
   for(const sd of r.slides){
     const s=newSlide();
     s.bgMode=sd.bg&&sd.bg.mode?sd.bg.mode:(sd.bg&&sd.bg.color?'solid':'photo');
-    if(s.bgMode==='solid')s.bgColor=(sd.bg&&sd.bg.color)||'#1D4ED8';
+    if(s.bgMode==='solid')s.bgColor=(sd.bg&&sd.bg.color)||'#101418';
     if(sd.kicker)s.kicker=sd.kicker;
     s.headline=sd.headline||'';
     s.body=sd.body||'';
     if(sd.textStyle)s.textStyle=sd.textStyle;
     if(sd.color)s.color=sd.color;
+    if(sd.bodyColor!=null)s.bodyColor=sd.bodyColor;
     if(sd.valign)s.valign=sd.valign;
     if(sd.hsize)s.hsize=sd.hsize;
+    if(sd.bodySize)s.bodySize=sd.bodySize;
     if(s.bgMode==='photo'&&sd.bg&&sd.bg.image){const b=await loadImgSrc(sd.bg.image);
       if(b){s.img=b.im;s.imgSrc=b.src;}if(sd.bg.zoom)s.zoom=sd.bg.zoom;
       if(sd.bg.offsetX)s.offsetX=sd.bg.offsetX;if(sd.bg.offsetY)s.offsetY=sd.bg.offsetY;}
@@ -563,18 +706,22 @@ async function loadRecipe(json){
 }
 document.getElementById('loadRecipe').onclick=()=>loadRecipe(document.getElementById('recipe').value);
 document.getElementById('loadExport').onclick=async()=>{const ok=await loadRecipe(document.getElementById('recipe').value);
-  if(ok)setTimeout(()=>document.getElementById('exportAll').click(),250);};
-// expose for Chrome automation: window.PostStudio.loadRecipe({...}) / .exportAll() / .renderAll()
-window.PostStudio={loadRecipe,exportAll:()=>document.getElementById('exportAll').click(),
-  renderAll:async()=>{const keep=state.cur,ks=state.sel;state.sel=null;const out=[];
+  if(ok)setTimeout(exportZip,250);};
+// expose for automation: window.PostStudio.loadRecipe({...}) / .exportAll() / .renderAll()
+window.PostStudio={loadRecipe,exportAll:()=>document.getElementById('exportAll').click(),exportZip,
+  renderAll:async()=>{const keep=state.cur,ks=state.sel;state.sel=null;state.exporting=true;const out=[];
     for(let i=0;i<state.slides.length;i++){state.cur=i;draw();out.push(cv.toDataURL('image/png'));}
-    state.cur=keep;state.sel=ks;refresh();return out;}};
+    state.exporting=false;state.cur=keep;state.sel=ks;refresh();return out;}};
 
-// boot
+// boot: ưu tiên nội dung đã lưu; nếu chưa có thì dùng recipe nhúng sẵn (nếu có)
 (async()=>{try{await document.fonts.ready;await Promise.all([
   document.fonts.load('400 120px "Anton"'),document.fonts.load('400 120px "Archivo Black"'),
   document.fonts.load('900 120px "Inter"'),document.fonts.load('700 120px "Oswald"'),
+  document.fonts.load('italic 400 40px "Inter"'),
   document.fonts.load('400 40px "Inter"'),document.fonts.load('700 46px "Inter"')]);}catch(e){}
+  let restored=false;
+  try{restored=await restoreState();}catch(e){restored=false;}
+  if(!restored&&window.__EMBEDDED_RECIPE__){try{await loadRecipe(window.__EMBEDDED_RECIPE__);}catch(e){}}
   refresh();})();
 </script>
 </body>

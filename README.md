@@ -59,6 +59,10 @@ Field notes:
 - `textStyle`: `fill` | `outline` | `shadow`
 - `valign`: `top` | `middle` | `bottom`
 - `bg.mode`: `photo` (needs `image`) | `solid` (needs `color`)
+- top-level `size`: `4:5` (1080×1350, IG) | `9:16` (1080×1920, TikTok) | `1:1` (1080×1080)
+- top-level `prefix`: tên file khi export (vd `saint-p01` → `saint-p01-slide-01.png`)
+- slide `bodySize`: cỡ chữ body (px, mặc định 40); slide `bodyColor`: màu body riêng (để trống = theo màu headline)
+- Nội dung tự lưu vào localStorage; mở lại trình duyệt là còn. Ảnh upload lưu dạng dataURL (giới hạn ~5MB/trình duyệt)
 - text elements: `italic: true` renders italic 400 weight (dùng cho dòng nguồn / chú thích), `maxw` overrides max width before wrap (default 560, tính theo px canvas trước khi nhân `scale`)
 - text element `box`: a hex color for a bubble, or `"none"` for plain text (e.g. an arrow `→`)
 - canvas is 1080×1350, so `x`/`y` are in that coordinate space
