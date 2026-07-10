@@ -9,16 +9,24 @@
     {
       "bg": { "mode": "solid", "color": "#0E1116" },
       "kicker": "TIN TUẦN NÀY",
-      "headline": "NÃO MỚI CHO\nCHATGPT",
-      "body": "GPT-5.6 vừa ra ngày 09/07.\nCopilot ở công ty bạn\ncũng được nâng cấp theo.",
+      "headline": "GPT-5.6 RA LÒ:\nKHÔNG PHẢI 1, MÀ LÀ 3",
+      "body": "OpenAI ra ngày 09/07.\nBa phiên bản, ba mức giá.\nNão mới của ChatGPT và Copilot 365.",
       "textStyle": "fill",
       "color": "#FFFFFF",
       "valign": "middle"
     },
     {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "3 PHIÊN BẢN LÀ GÌ?",
+      "body": "Sol: mạnh nhất, cho việc khó.\nTerra: tầm trung, đủ cho đa số việc.\nLuna: rẻ nhất mà vẫn được xếp\ntrên Opus 4.8 của Anthropic.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
       "bg": { "mode": "solid", "color": "#1D4ED8" },
-      "headline": "CÓ GÌ HAY?",
-      "body": "Trả lời nhanh và ít sai hơn.\nViệc văn phòng làm tốt hơn hẳn:\ntóm tắt mail, công thức Excel,\nviết báo cáo.",
+      "headline": "MẠNH CỠ NÀO?",
+      "body": "Sol đạt 80 điểm Coding Agent Index,\ncao nhất thị trường hiện tại.\nLàm việc code tốn ít token hơn 54%,\ntức là nhanh hơn và rẻ hơn.",
       "textStyle": "fill",
       "color": "#FFFFFF",
       "valign": "top",
@@ -28,16 +36,32 @@
     },
     {
       "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "TEST THỬ LIỀN",
-      "body": "Cùng một yêu cầu.\nBên trái model cũ.\nBên phải GPT-5.6.",
+      "headline": "GIÁ API BAO NHIÊU?",
+      "body": "Sol: 5 đô vào, 30 đô ra.\nTerra: 2.5 đô vào, 15 đô ra.\nLuna: 1 đô vào, 6 đô ra.\nGiá tính trên mỗi triệu token.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "CHATGPT WORK",
+      "body": "Tool mới đi kèm cho team văn phòng:\nsoạn tài liệu, bảng tính, slide\ntrong cùng một chỗ.\nCó desktop, web và mobile.",
       "textStyle": "outline",
       "color": "#FFFFFF",
       "valign": "top"
     },
     {
       "bg": { "mode": "solid", "color": "#1D4ED8" },
-      "headline": "THỬ LẠI ĐI",
-      "body": "Việc nào từng chê AI làm dở,\ngiờ đưa lại cho GPT-5.6 xem sao.\nFollow mình để khỏi lỡ tool mới.",
+      "headline": "DÙNG NGAY THẾ NÀO?",
+      "body": "ChatGPT: chọn GPT-5.6 ở dropdown.\nCopilot 365: tự nâng cấp, khỏi làm gì.\nAPI: đổi tên model là chạy.",
+      "textStyle": "fill",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "TEST LẠI ĐI",
+      "body": "Việc nào từng chê AI làm dở,\ngiờ đưa lại cho GPT-5.6 xem sao:\ntóm tắt mail, công thức Excel, báo cáo.\nSave lại để lúc test khỏi quên.",
       "textStyle": "fill",
       "color": "#FFFFFF",
       "valign": "middle"
