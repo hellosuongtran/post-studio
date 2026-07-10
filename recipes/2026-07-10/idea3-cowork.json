@@ -1,0 +1,46 @@
+{
+  "handle": "@yourhandle",
+  "font": "Anton",
+  "scrim": "top",
+  "scrimStr": 0.45,
+  "size": "4:5",
+  "prefix": "idea3-cowork",
+  "slides": [
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "kicker": "TIN TUẦN NÀY",
+      "headline": "GIAO VIỆC BUỔI TỐI\nSÁNG NHẬN KẾT QUẢ",
+      "body": "Claude Cowork vừa lên mobile.",
+      "textStyle": "fill",
+      "color": "#FFFFFF",
+      "valign": "middle"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "TASK CHẠY NỀN",
+      "body": "Giao task ở máy công ty.\nTrên đường về mở điện thoại\nxem nó chạy tới đâu.\nTắt máy việc vẫn chạy.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top",
+      "elements": [
+        { "type": "text", "text": "Nguồn: Claude Blog, 07/07/2026", "x": 540, "y": 1180, "scale": 0.62, "box": "none", "color": "#9AA3AE", "italic": true, "maxw": 1200 }
+      ]
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "CẦN GÌ NÓ HỎI",
+      "body": "Chỗ nào cần bạn quyết,\nClaude dừng lại hỏi trước.\nDuyệt xong nó làm tiếp.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#D97706" },
+      "headline": "ĐANG BETA CHO GÓI MAX",
+      "body": "Sẽ mở rộng dần các gói khác.\nSave lại để lúc cần lôi ra xem.",
+      "textStyle": "fill",
+      "color": "#FFFFFF",
+      "valign": "middle"
+    }
+  ]
+}

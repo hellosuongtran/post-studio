@@ -1,0 +1,46 @@
+{
+  "handle": "@yourhandle",
+  "font": "Anton",
+  "scrim": "top",
+  "scrimStr": 0.45,
+  "size": "4:5",
+  "prefix": "idea2-notion36",
+  "slides": [
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "kicker": "TIN TUẦN NÀY",
+      "headline": "GIAO VIỆC CHO AI\nNGAY TRONG NOTION",
+      "body": "Notion 3.6 vừa ra ngày 01/07.",
+      "textStyle": "fill",
+      "color": "#FFFFFF",
+      "valign": "middle"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "ASSIGN NHƯ\nĐỒNG NGHIỆP",
+      "body": "Tạo task trên board của team,\nassign thẳng cho Claude, Cursor.\nAI nhận việc, làm xong báo lại.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top",
+      "elements": [
+        { "type": "text", "text": "Nguồn: Notion Releases, 01/07/2026", "x": 540, "y": 1180, "scale": 0.62, "box": "none", "color": "#9AA3AE", "italic": true, "maxw": 1200 }
+      ]
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "HỌP XONG KHỎI GHI",
+      "body": "Meeting notes giờ biết ai nói gì.\nFollow up tự gắn đúng người.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#DB2777" },
+      "headline": "TEAM BẠN XÀI NOTION?",
+      "body": "Update lên 3.6 rồi thử liền.\nFollow mình, tuần nào cũng có\ntool mới đáng xài.",
+      "textStyle": "fill",
+      "color": "#FFFFFF",
+      "valign": "middle"
+    }
+  ]
+}
