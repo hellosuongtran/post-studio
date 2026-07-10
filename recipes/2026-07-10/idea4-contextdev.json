@@ -1,70 +1,93 @@
 {
   "handle": "@itzz.saint.analyst",
-  "font": "Anton",
-  "scrim": "top",
-  "scrimStr": 0.45,
+  "font": "Inter",
+  "scrim": "full",
+  "scrimStr": 0.5,
   "size": "4:5",
   "prefix": "idea4-contextdev",
   "slides": [
     {
-      "bg": { "mode": "solid", "color": "#0E1116" },
+      "bg": { "mode": "solid", "color": "#101418" },
       "kicker": "TOOL CHO DÂN DATA",
-      "headline": "LẤY DATA TỪ WEB\nBẰNG MỘT API",
-      "body": "Context.dev, tân binh YC S26.\nKhỏi viết scraper, khỏi lo bị chặn.",
+      "headline": "Cào data web\nkhông cần scraper",
+      "body": "Context.dev, tân binh YC S26\nđang hot trên Hacker News.\nMột API thay cả buổi viết code\nrồi ngồi vá mỗi khi nó gãy.",
       "textStyle": "fill",
-      "color": "#FFFFFF",
-      "valign": "middle"
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 88
     },
     {
-      "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "KHAI SCHEMA,\nNHẬN DATA",
-      "body": "Định nghĩa JSON schema bạn cần,\nví dụ: tên gói, giá, chu kỳ trả phí.\nNó cào trang và trả về đúng format,\nsạch tới mức đưa thẳng vào phân tích.",
-      "textStyle": "outline",
-      "color": "#FFFFFF",
-      "valign": "top",
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "VẤN ĐỀ CŨ",
+      "headline": "Scraper tự viết\nlà nợ kỹ thuật",
+      "body": "Web đổi layout là code gãy.\nDính JavaScript là phải giả lập\ntrình duyệt, nặng và chậm.\nDính hệ chặn bot là xong phim.",
+      "textStyle": "fill",
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 80
+    },
+    {
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "CÁCH NÓ CHẠY",
+      "headline": "Khai schema,\nnhận data sạch",
+      "body": "Mô tả JSON schema bạn cần,\nví dụ: tên gói, giá, chu kỳ trả phí.\nGửi kèm URL, nó trả về đúng format,\nđưa thẳng vào pandas phân tích.",
+      "textStyle": "fill",
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 80,
       "elements": [
-        { "type": "text", "text": "Nguồn: context.dev, Hacker News 07/2026", "x": 540, "y": 1180, "scale": 0.62, "box": "none", "color": "#9AA3AE", "italic": true, "maxw": 1200 }
+        { "type": "text", "text": "Nguồn: context.dev, Hacker News 07/2026", "x": 350, "y": 1140, "scale": 0.62, "box": "none", "color": "#9AA3AE", "italic": true, "maxw": 1200 }
       ]
     },
     {
-      "bg": { "mode": "solid", "color": "#15803D" },
-      "headline": "GIÁ GỘP,\nKHÔNG PHỤ PHÍ",
-      "body": "Render JavaScript, né chặn bot,\nproxy xịn: gộp hết trong giá chuẩn,\n1 credit cho mỗi trang.\nExtract có cấu trúc: 10 credits.",
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "VÍ DỤ THAM KHẢO",
+      "headline": "Theo dõi giá\nđối thủ mỗi sáng",
+      "body": "Khai schema: tên sản phẩm, giá,\ncòn hàng hay không.\nCho chạy theo lịch mỗi sáng,\nđổ thẳng vào dashboard của bạn.",
       "textStyle": "fill",
-      "color": "#FFFFFF",
-      "valign": "top"
+      "color": "#FFC933",
+      "valign": "middle",
+      "hsize": 80
     },
     {
-      "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "NHANH VÀ ĐỦ SDK",
-      "body": "Cào markdown trả về cỡ 247ms.\nSDK chính thức: Python, TypeScript,\nGo, Ruby và PHP.\nCó API key ngay khi đăng ký.",
-      "textStyle": "outline",
-      "color": "#FFFFFF",
-      "valign": "top"
-    },
-    {
-      "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "FREE TIER XÀI SAO?",
-      "body": "Mail công ty: 500 credits free,\n30 request mỗi phút.\nMail thường: 250 credits.\nGói trả phí từ 25 đô mỗi tháng.",
-      "textStyle": "outline",
-      "color": "#FFFFFF",
-      "valign": "top"
-    },
-    {
-      "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "DÙNG CHO VIỆC GÌ?",
-      "body": "Nuôi RAG bằng content mới,\nenrich hồ sơ công ty,\ncrawl cả site qua sitemap,\nphân loại ngành theo mã NAICS.",
-      "textStyle": "outline",
-      "color": "#FFFFFF",
-      "valign": "top"
-    },
-    {
-      "bg": { "mode": "solid", "color": "#15803D" },
-      "headline": "DÂN DATA NÊN THỬ",
-      "body": "Lần tới cần cào data,\nthử khai schema trước khi\nngồi viết scraper.\nSave lại, lúc cần lôi ra xem.",
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "GIÁ GỘP",
+      "headline": "1 credit 1 trang,\nkhông phụ phí",
+      "body": "Render JavaScript, né chặn bot,\nproxy xịn: gộp hết trong giá chuẩn.\nExtract theo schema: 10 credits.\nTốc độ trả markdown cỡ 247ms.",
       "textStyle": "fill",
-      "color": "#FFFFFF",
-      "valign": "middle"
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 76
+    },
+    {
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "FREE TIER",
+      "headline": "500 credits free\nvới mail công ty",
+      "body": "Mail công ty: 500 credits,\n30 request mỗi phút.\nMail thường: còn 250 credits.\nGói trả phí từ 25 đô mỗi tháng.",
+      "textStyle": "fill",
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 76
+    },
+    {
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "GIỚI HẠN",
+      "headline": "Không phải\nđũa thần",
+      "body": "Cào được không có nghĩa\nlà được phép cào.\nĐọc kỹ điều khoản trang đích,\nnhất là chỗ dính data cá nhân.",
+      "textStyle": "fill",
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 88
+    },
+    {
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "CHỐT",
+      "headline": "Thử trước khi\nviết scraper mới",
+      "body": "SDK Python, TypeScript, Go có sẵn.\nĐăng ký là có API key liền.\nSave lại cho lần tới cần data.\nComment site bạn đang phải cào 👇",
+      "textStyle": "fill",
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 80
     }
   ]
 }

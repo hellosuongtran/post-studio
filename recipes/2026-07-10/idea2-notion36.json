@@ -1,70 +1,93 @@
 {
   "handle": "@itzz.saint.analyst",
-  "font": "Anton",
-  "scrim": "top",
-  "scrimStr": 0.45,
+  "font": "Inter",
+  "scrim": "full",
+  "scrimStr": 0.5,
   "size": "4:5",
   "prefix": "idea2-notion36",
   "slides": [
     {
-      "bg": { "mode": "solid", "color": "#0E1116" },
-      "kicker": "TIN TUẦN NÀY",
-      "headline": "AI THÀNH ĐỒNG NGHIỆP\nTHẬT TRONG NOTION",
-      "body": "Notion 3.6 ra ngày 01/07.\nĐây là 4 thứ đáng xài nhất.",
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "TIN TUẦN NÀY · 01/07",
+      "headline": "Notion biến AI\nthành nhân viên",
+      "body": "Bản 3.6 vừa ra.\nKhông phải chatbot gắn thêm,\nmà là đồng nghiệp có tên trên board,\nnhận task như bạn nhận task.",
       "textStyle": "fill",
-      "color": "#FFFFFF",
-      "valign": "middle"
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 88
     },
     {
-      "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "1. ASSIGN TASK CHO AI",
-      "body": "Claude và Cursor là 2 external agent\nđầu tiên trong Notion.\nTạo task trên board của team,\n@mention nó y như đồng nghiệp.",
-      "textStyle": "outline",
-      "color": "#FFFFFF",
-      "valign": "top",
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "MỚI 01 / 04",
+      "headline": "Assign task\ncho Claude, Cursor",
+      "body": "Tạo task như bình thường,\nchỗ assignee chọn Claude thay người.\n@mention nó trong comment\nlà nó nhảy vào làm.",
+      "textStyle": "fill",
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 76,
       "elements": [
-        { "type": "text", "text": "Nguồn: Notion Releases, 01/07/2026", "x": 540, "y": 1180, "scale": 0.62, "box": "none", "color": "#9AA3AE", "italic": true, "maxw": 1200 }
+        { "type": "text", "text": "Nguồn: Notion Releases, 01/07/2026", "x": 350, "y": 1140, "scale": 0.62, "box": "none", "color": "#9AA3AE", "italic": true, "maxw": 1200 }
       ]
     },
     {
-      "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "2. HỌP XONG KHỎI GHI",
-      "body": "Meeting notes nhận ra ai đang nói\ndựa trên mic của ai đang bật.\nFollow up tự gắn đúng người.\nXài desktop app cho chuẩn nhất.",
-      "textStyle": "outline",
-      "color": "#FFFFFF",
-      "valign": "top"
-    },
-    {
-      "bg": { "mode": "solid", "color": "#DB2777" },
-      "headline": "3. ĐỌC VÀ TẠO\nFILE OFFICE",
-      "body": "Đưa Excel, PowerPoint, Word, PDF\ncho agent đọc làm ngữ cảnh.\nNgược lại: biến page thành slide,\nbiến database thành model Excel.",
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "VÍ DỤ THẬT",
+      "headline": "Việc nên giao\nngay tuần này",
+      "body": "Gom feedback khách từ 20 page\nthành 1 bảng có phân loại.\nViết draft spec từ notes rải rác.\nDọn database trùng lặp lâu năm.",
       "textStyle": "fill",
-      "color": "#FFFFFF",
-      "valign": "top"
+      "color": "#FFC933",
+      "valign": "middle",
+      "hsize": 76
     },
     {
-      "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "4. NỐI THÊM ĐỒ NGHỀ",
-      "body": "Outlook Mail và Calendar:\nagent lo inbox với lịch họp giùm.\nThêm 5 MCP mới: Mixpanel, Miro,\nBox, Mercury, ClickHouse.",
-      "textStyle": "outline",
-      "color": "#FFFFFF",
-      "valign": "top"
-    },
-    {
-      "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "LƯU Ý TRƯỚC KHI XÀI",
-      "body": "Audit log cho Custom Agent\nchỉ có ở gói Enterprise.\nCó thêm model mới để chọn:\nOpus 4.8, Grok 4.3, GLM 5.2.",
-      "textStyle": "outline",
-      "color": "#FFFFFF",
-      "valign": "top"
-    },
-    {
-      "bg": { "mode": "solid", "color": "#DB2777" },
-      "headline": "TEAM BẠN XÀI NOTION?",
-      "body": "Update lên 3.6 rồi thử assign\ntask đầu tiên cho Claude.\nSave lại làm checklist khi setup.",
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "MỚI 02 / 04",
+      "headline": "Họp xong,\nviệc tự chia",
+      "body": "Meeting notes nhận ra ai đang nói\nqua mic của từng người.\nAction item tự gắn đúng tên.\nHết cảnh hỏi ai note giùm với.",
       "textStyle": "fill",
-      "color": "#FFFFFF",
-      "valign": "middle"
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 80
+    },
+    {
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "MỚI 03 / 04",
+      "headline": "Đọc Excel,\nxuất PowerPoint",
+      "body": "Kéo file Excel, Word, PDF vào\nlàm ngữ cảnh cho agent.\nNgược lại: biến page thành slide,\nbiến database thành model Excel.",
+      "textStyle": "fill",
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 80
+    },
+    {
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "MỚI 04 / 04",
+      "headline": "Nối Outlook\nvà 5 app mới",
+      "body": "Agent đọc inbox, xếp lịch họp giùm\nqua Outlook Mail và Calendar.\nThêm MCP mới: Miro, Mixpanel,\nBox, Mercury, ClickHouse.",
+      "textStyle": "fill",
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 80
+    },
+    {
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "LƯU Ý",
+      "headline": "Đọc trước khi\nbật cho cả team",
+      "body": "Audit log theo dõi agent làm gì\nchỉ có ở gói Enterprise.\nGói thường nên thử ở workspace\nriêng trước khi mở cho cả team.",
+      "textStyle": "fill",
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 76
+    },
+    {
+      "bg": { "mode": "solid", "color": "#101418" },
+      "kicker": "CHỐT",
+      "headline": "Thử 1 task nhỏ\ntrước đã",
+      "body": "Chọn việc nhàm nhất tuần này,\nassign cho Claude trong Notion.\nĐược thì nhân rộng, không thì thôi.\nComment việc bạn sẽ giao đầu tiên 👇",
+      "textStyle": "fill",
+      "color": "#F5F5F0",
+      "valign": "middle",
+      "hsize": 84
     }
   ]
 }
