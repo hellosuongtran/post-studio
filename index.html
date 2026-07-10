@@ -6,7 +6,7 @@
 <title>Carousel Studio — IG post maker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Oswald:wght@600;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@900&family=Oswald:wght@600;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 <!-- HEIC -> JPEG converter (loads from web on first use; falls back gracefully offline) -->
 <script src="https://unpkg.com/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <!-- ZIP for one-click export all -->
@@ -206,7 +206,7 @@
       <label>Font headline</label>
       <select id="font">
         <option value="Anton">Anton — đậm, hẹp</option>
-        <option value="Archivo Black">Archivo Black — đậm, rộng</option>
+        <option value="Archivo">Archivo Black — đậm, rộng</option>
         <option value="Inter">Inter Black — sạch, hiện đại</option>
         <option value="Oswald">Oswald — đậm vừa, hẹp</option>
       </select>
@@ -279,7 +279,9 @@ const state={
   font:'Anton', scrim:'top', scrimStr:0.45, handle:'@yourhandle', showPill:true, showHandle:true
 };
 const S=()=>state.slides[state.cur];
-const FW={'Anton':'400','Archivo Black':'400','Inter':'900','Oswald':'700'};
+// Archivo 900 thay cho Archivo Black: Archivo Black không có subset tiếng Việt trên Google Fonts
+const FW={'Anton':'400','Archivo':'900','Inter':'900','Oswald':'700'};
+const normFont=f=>f==='Archivo Black'?'Archivo':f; // recipe/state cũ vẫn load được
 const headFont=px=>`${FW[state.font]} ${px}px "${state.font}"`;
 const isLight=hex=>{const c=hex.replace('#','');const r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return (0.299*r+0.587*g+0.114*b)>150;};
 
@@ -538,7 +540,8 @@ bind('zoom','input',e=>{S().zoom=+e.target.value;draw();});
 bind('handle','input',e=>{state.handle=e.target.value;draw();});
 bind('prefix','input',e=>{state.prefix=e.target.value.trim();scheduleSave();});
 bind('scstr','input',e=>{state.scrimStr=+e.target.value;document.getElementById('scval').textContent=Math.round(state.scrimStr*100)+'%';draw();});
-bind('font','change',e=>{state.font=e.target.value;draw();});
+bind('font','change',e=>{state.font=e.target.value;draw();
+  try{document.fonts.load(`${FW[state.font]} 120px "${state.font}"`,VI_SAMPLE).then(draw);}catch(_){}});
 bind('bgcolor','input',e=>{S().bgColor=e.target.value;document.querySelectorAll('#solidctrl .sw').forEach(x=>x.classList.remove('active'));draw();});
 bind('showpill','change',e=>{state.showPill=e.target.checked;draw();});
 bind('showhandle','change',e=>{state.showHandle=e.target.checked;draw();});
@@ -638,7 +641,7 @@ async function restoreState(){
   if(!d||!Array.isArray(d.slides)||!d.slides.length)return false;
   state.size=d.size||'4:5';setSize(state.size);
   state.prefix=d.prefix||'';
-  if(d.font&&FW[d.font])state.font=d.font;
+  if(d.font&&FW[normFont(d.font)])state.font=normFont(d.font);
   if(d.scrim)state.scrim=d.scrim;
   if(d.scrimStr!=null)state.scrimStr=d.scrimStr;
   if(d.handle!=null)state.handle=d.handle;
@@ -673,7 +676,7 @@ async function loadRecipe(json){
   if(r.size&&SIZES[r.size])setSize(r.size); else setSize(state.size);
   if(r.prefix!=null)state.prefix=r.prefix;
   if(r.handle!=null)state.handle=r.handle;
-  if(r.font&&FW[r.font])state.font=r.font;
+  if(r.font&&FW[normFont(r.font)])state.font=normFont(r.font);
   if(r.scrim)state.scrim=r.scrim;
   if(r.scrimStr!=null)state.scrimStr=r.scrimStr;
   const out=[];
@@ -714,11 +717,14 @@ window.PostStudio={loadRecipe,exportAll:()=>document.getElementById('exportAll')
     state.exporting=false;state.cur=keep;state.sel=ks;refresh();return out;}};
 
 // boot: ưu tiên nội dung đã lưu; nếu chưa có thì dùng recipe nhúng sẵn (nếu có)
+// text mẫu chứa dấu tiếng Việt: ép trình duyệt tải slice "vietnamese" của Google Fonts
+// (canvas không tự tải slice theo unicode-range như DOM, thiếu là chữ có dấu rớt về font hệ thống)
+const VI_SAMPLE='AĂÂĐÊÔƠƯàảãạằẳẵặầẩẫậèẻẽẹềểễệìỉĩịòỏõọồổỗộờởỡợùủũụừửữựỳỷỹỵđ';
 (async()=>{try{await document.fonts.ready;await Promise.all([
-  document.fonts.load('400 120px "Anton"'),document.fonts.load('400 120px "Archivo Black"'),
-  document.fonts.load('900 120px "Inter"'),document.fonts.load('700 120px "Oswald"'),
-  document.fonts.load('italic 400 40px "Inter"'),
-  document.fonts.load('400 40px "Inter"'),document.fonts.load('700 46px "Inter"')]);}catch(e){}
+  document.fonts.load('400 120px "Anton"',VI_SAMPLE),document.fonts.load('900 120px "Archivo"',VI_SAMPLE),
+  document.fonts.load('900 120px "Inter"',VI_SAMPLE),document.fonts.load('700 120px "Oswald"',VI_SAMPLE),
+  document.fonts.load('italic 400 40px "Inter"',VI_SAMPLE),
+  document.fonts.load('400 40px "Inter"',VI_SAMPLE),document.fonts.load('700 46px "Inter"',VI_SAMPLE)]);}catch(e){}
   let restored=false;
   try{restored=await restoreState();}catch(e){restored=false;}
   if(!restored&&window.__EMBEDDED_RECIPE__){try{await loadRecipe(window.__EMBEDDED_RECIPE__);}catch(e){}}
