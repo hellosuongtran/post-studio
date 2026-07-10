@@ -10,15 +10,15 @@
       "bg": { "mode": "solid", "color": "#0E1116" },
       "kicker": "TIN TUẦN NÀY",
       "headline": "GIAO VIỆC BUỔI TỐI\nSÁNG NHẬN KẾT QUẢ",
-      "body": "Claude Cowork vừa lên mobile.",
+      "body": "Claude Cowork lên web và mobile\ntừ 07/07. Đây là cách nó chạy.",
       "textStyle": "fill",
       "color": "#FFFFFF",
       "valign": "middle"
     },
     {
       "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "TASK CHẠY NỀN",
-      "body": "Giao task ở máy công ty.\nTrên đường về mở điện thoại\nxem nó chạy tới đâu.\nTắt máy việc vẫn chạy.",
+      "headline": "CHẠY NỀN THẬT SỰ",
+      "body": "Gập laptop đi họp, task vẫn chạy.\nTask hẹn giờ chạy cả khi\nmáy bạn không mở.\nVí dụ: 6h sáng thứ Hai tự soạn brief.",
       "textStyle": "outline",
       "color": "#FFFFFF",
       "valign": "top",
@@ -28,16 +28,40 @@
     },
     {
       "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "CẦN GÌ NÓ HỎI",
-      "body": "Chỗ nào cần bạn quyết,\nClaude dừng lại hỏi trước.\nDuyệt xong nó làm tiếp.",
+      "headline": "MỘT TASK,\nMỌI THIẾT BỊ",
+      "body": "Session và file sync hết.\nBắt đầu ở máy công ty,\nxem tiến độ trên điện thoại,\nlấy kết quả ở bất kỳ đâu.",
       "textStyle": "outline",
       "color": "#FFFFFF",
       "valign": "top"
     },
     {
       "bg": { "mode": "solid", "color": "#D97706" },
-      "headline": "ĐANG BETA CHO GÓI MAX",
-      "body": "Sẽ mở rộng dần các gói khác.\nSave lại để lúc cần lôi ra xem.",
+      "headline": "CẦN GÌ NÓ HỎI",
+      "body": "Chỗ nào cần bạn quyết,\ncâu hỏi đẩy thẳng về điện thoại.\nSửa hướng giữa chừng được.\nChưa duyệt thì chưa gửi đi đâu cả.",
+      "textStyle": "fill",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "LÀM ĐƯỢC VIỆC GÌ?",
+      "body": "Hơn 90% task không phải code:\nđối soát chi tiêu theo quý,\nphân tích hợp đồng,\ndựng slide cho khách từ transcript.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "AI ĐƯỢC XÀI?",
+      "body": "Beta cho gói Max trước,\ncác gói khác mở dần vài tuần tới.\nLimit đang nhân đôi tới 05/08.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#D97706" },
+      "headline": "ĐÁNG THỬ NHẤT\nTHÁNG NÀY",
+      "body": "Chọn 1 việc lặp lại mỗi tuần,\ngiao cho Cowork chạy thử.\nSave lại để tối nay thử liền.",
       "textStyle": "fill",
       "color": "#FFFFFF",
       "valign": "middle"
