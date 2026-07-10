@@ -55,7 +55,7 @@ You can also drive it from the page console / Chrome automation:
 ```
 
 Field notes:
-- `font`: `Anton` | `Archivo Black` | `Inter` | `Oswald`
+- `font`: `Anton` | `Archivo` | `Inter` | `Oswald` (`Archivo Black` cũ vẫn nhận, tự đổi thành `Archivo` 900 vì bản Black không có tiếng Việt)
 - `textStyle`: `fill` | `outline` | `shadow`
 - `valign`: `top` | `middle` | `bottom`
 - `bg.mode`: `photo` (needs `image`) | `solid` (needs `color`)
