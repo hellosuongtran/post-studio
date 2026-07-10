@@ -9,16 +9,16 @@
     {
       "bg": { "mode": "solid", "color": "#0E1116" },
       "kicker": "TIN TUẦN NÀY",
-      "headline": "GIAO VIỆC CHO AI\nNGAY TRONG NOTION",
-      "body": "Notion 3.6 vừa ra ngày 01/07.",
+      "headline": "AI THÀNH ĐỒNG NGHIỆP\nTHẬT TRONG NOTION",
+      "body": "Notion 3.6 ra ngày 01/07.\nĐây là 4 thứ đáng xài nhất.",
       "textStyle": "fill",
       "color": "#FFFFFF",
       "valign": "middle"
     },
     {
       "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "ASSIGN NHƯ\nĐỒNG NGHIỆP",
-      "body": "Tạo task trên board của team,\nassign thẳng cho Claude, Cursor.\nAI nhận việc, làm xong báo lại.",
+      "headline": "1. ASSIGN TASK CHO AI",
+      "body": "Claude và Cursor là 2 external agent\nđầu tiên trong Notion.\nTạo task trên board của team,\n@mention nó y như đồng nghiệp.",
       "textStyle": "outline",
       "color": "#FFFFFF",
       "valign": "top",
@@ -28,8 +28,32 @@
     },
     {
       "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "HỌP XONG KHỎI GHI",
-      "body": "Meeting notes giờ biết ai nói gì.\nFollow up tự gắn đúng người.",
+      "headline": "2. HỌP XONG KHỎI GHI",
+      "body": "Meeting notes nhận ra ai đang nói\ndựa trên mic của ai đang bật.\nFollow up tự gắn đúng người.\nXài desktop app cho chuẩn nhất.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#DB2777" },
+      "headline": "3. ĐỌC VÀ TẠO\nFILE OFFICE",
+      "body": "Đưa Excel, PowerPoint, Word, PDF\ncho agent đọc làm ngữ cảnh.\nNgược lại: biến page thành slide,\nbiến database thành model Excel.",
+      "textStyle": "fill",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "4. NỐI THÊM ĐỒ NGHỀ",
+      "body": "Outlook Mail và Calendar:\nagent lo inbox với lịch họp giùm.\nThêm 5 MCP mới: Mixpanel, Miro,\nBox, Mercury, ClickHouse.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "LƯU Ý TRƯỚC KHI XÀI",
+      "body": "Audit log cho Custom Agent\nchỉ có ở gói Enterprise.\nCó thêm model mới để chọn:\nOpus 4.8, Grok 4.3, GLM 5.2.",
       "textStyle": "outline",
       "color": "#FFFFFF",
       "valign": "top"
@@ -37,7 +61,7 @@
     {
       "bg": { "mode": "solid", "color": "#DB2777" },
       "headline": "TEAM BẠN XÀI NOTION?",
-      "body": "Update lên 3.6 rồi thử liền.\nFollow mình, tuần nào cũng có\ntool mới đáng xài.",
+      "body": "Update lên 3.6 rồi thử assign\ntask đầu tiên cho Claude.\nSave lại làm checklist khi setup.",
       "textStyle": "fill",
       "color": "#FFFFFF",
       "valign": "middle"
