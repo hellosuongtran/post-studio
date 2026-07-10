@@ -10,26 +10,50 @@
       "bg": { "mode": "solid", "color": "#0E1116" },
       "kicker": "TOOL CHO DÂN DATA",
       "headline": "LẤY DATA TỪ WEB\nBẰNG MỘT API",
-      "body": "Context.dev, tân binh YC S26.",
+      "body": "Context.dev, tân binh YC S26.\nKhỏi viết scraper, khỏi lo bị chặn.",
       "textStyle": "fill",
       "color": "#FFFFFF",
       "valign": "middle"
     },
     {
       "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "KHỎI VIẾT SCRAPER",
-      "body": "Khai báo schema JSON bạn muốn.\nNó tự cào, tự xử JavaScript,\ntự né anti-bot.\nTrả về data sạch để phân tích.",
+      "headline": "KHAI SCHEMA,\nNHẬN DATA",
+      "body": "Định nghĩa JSON schema bạn cần,\nví dụ: tên gói, giá, chu kỳ trả phí.\nNó cào trang và trả về đúng format,\nsạch tới mức đưa thẳng vào phân tích.",
       "textStyle": "outline",
       "color": "#FFFFFF",
       "valign": "top",
       "elements": [
-        { "type": "text", "text": "Nguồn: Hacker News, 07/2026", "x": 540, "y": 1180, "scale": 0.62, "box": "none", "color": "#9AA3AE", "italic": true, "maxw": 1200 }
+        { "type": "text", "text": "Nguồn: context.dev, Hacker News 07/2026", "x": 540, "y": 1180, "scale": 0.62, "box": "none", "color": "#9AA3AE", "italic": true, "maxw": 1200 }
       ]
     },
     {
+      "bg": { "mode": "solid", "color": "#15803D" },
+      "headline": "GIÁ GỘP,\nKHÔNG PHỤ PHÍ",
+      "body": "Render JavaScript, né chặn bot,\nproxy xịn: gộp hết trong giá chuẩn,\n1 credit cho mỗi trang.\nExtract có cấu trúc: 10 credits.",
+      "textStyle": "fill",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
       "bg": { "mode": "solid", "color": "#0E1116" },
-      "headline": "CÓ FREE TIER",
-      "body": "500 credits miễn phí để thử.\nKhông cần thẻ.",
+      "headline": "NHANH VÀ ĐỦ SDK",
+      "body": "Cào markdown trả về cỡ 247ms.\nSDK chính thức: Python, TypeScript,\nGo, Ruby và PHP.\nCó API key ngay khi đăng ký.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "FREE TIER XÀI SAO?",
+      "body": "Mail công ty: 500 credits free,\n30 request mỗi phút.\nMail thường: 250 credits.\nGói trả phí từ 25 đô mỗi tháng.",
+      "textStyle": "outline",
+      "color": "#FFFFFF",
+      "valign": "top"
+    },
+    {
+      "bg": { "mode": "solid", "color": "#0E1116" },
+      "headline": "DÙNG CHO VIỆC GÌ?",
+      "body": "Nuôi RAG bằng content mới,\nenrich hồ sơ công ty,\ncrawl cả site qua sitemap,\nphân loại ngành theo mã NAICS.",
       "textStyle": "outline",
       "color": "#FFFFFF",
       "valign": "top"
@@ -37,7 +61,7 @@
     {
       "bg": { "mode": "solid", "color": "#15803D" },
       "headline": "DÂN DATA NÊN THỬ",
-      "body": "Lần tới cần cào data,\nkhỏi mất cả buổi viết scraper.\nFollow mình để khỏi lỡ tool mới.",
+      "body": "Lần tới cần cào data,\nthử khai schema trước khi\nngồi viết scraper.\nSave lại, lúc cần lôi ra xem.",
       "textStyle": "fill",
       "color": "#FFFFFF",
       "valign": "middle"
